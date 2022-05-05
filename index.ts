@@ -78,6 +78,10 @@ class DegreetTelegram<T extends IContext> {
           })
         ]
       })
+    } else if (update.callback_query) {
+      handlers = this.handlers.filter((handler: IHandler): boolean => (
+        handler.type === 'event' && update.callback_query?.data === handler.event
+      ))
     } else {
       handlers = this.handlers.filter(
         (handler: IHandler): boolean => handler.type === 'event' && events.includes(handler.event))

@@ -76,8 +76,14 @@ export class Context<T> implements IContext {
   session: any = {}
 
   constructor(update: IUpdate, connectionUri: string) {
-    this.message = update.message
-    this.from = update.message && update.message.from
+    if (update.message) {
+      this.message = update.message
+      this.from = update.message?.from
+    } else if (update.callback_query) {
+      this.message = update.callback_query?.message
+      this.from = update.callback_query?.from
+    }
+
     this.msg = new Msg(this.from, this.message, connectionUri)
   }
 }

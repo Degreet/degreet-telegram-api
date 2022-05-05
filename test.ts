@@ -40,6 +40,17 @@ bot.command('start', async (ctx: ICustomContext): Promise<void> => {
 })
 
 bot.on(
+  'test_btn',
+  async (ctx: IContext): Promise<void> => {
+    try {
+      console.log(ctx)
+    } catch (e: any) {
+      console.error(e)
+    }
+  }
+)
+
+bot.on(
   'text',
   async (ctx: ICustomContext, next: nextMiddleware): Promise<void> => {
     console.log('middleware worked')

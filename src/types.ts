@@ -64,10 +64,19 @@ export interface IMessage {
   entities?: IEntity[]
 }
 
+export interface ICallbackQuery {
+  id: string,
+  from: IChat
+  message: IMessage
+  chat_instance: string
+  data: string
+}
+
 export interface IUpdate {
   update_id: number,
   from?: IChat,
   message?: IMessage
+  callback_query?: ICallbackQuery
 }
 
 export interface IEntity {
