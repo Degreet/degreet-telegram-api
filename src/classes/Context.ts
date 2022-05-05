@@ -1,70 +1,38 @@
 import {
   IChat,
   IContext,
-  IInlineKeyboard,
   IMessage,
   IMessageExtra,
-  IRemoveKeyboard,
-  IReplyKeyboard,
   IUpdate
 } from '../types'
-import axios from 'axios'
+
 import { Markup } from './Markup'
+import { TelegramMethods } from './TelegramMethods'
 
 export class Msg {
   chat?: IChat
   from?: IChat
   message?: IMessage
-  connectionUri?: string
   message_id?: number
   date?: number
   text: string
 
-  constructor(from?: IChat, message?: IMessage, connectionUri?: string) {
+  constructor(from?: IChat, message?: IMessage) {
     this.from = from
     this.message = message
-    this.connectionUri = connectionUri
     this.chat = message && message.chat
     this.message_id = message && message.message_id
     this.date = message && message.date
     this.text = message && message.text || ''
   }
 
-  private async fetch<T>(url: string, extra: IMessageExtra): Promise<T> {
+  async send(text: string, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
     try {
-      const { data } = await axios.get(this.connectionUri + url, { params: extra })
-      return data.result
+      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().send(this.from.id, text, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.message}`)
     }
-  }
-
-  async send(text: string, extra: IMessageExtra | Markup = {}): Promise<IMessage> {
-    let resultExtra: IMessageExtra = {}
-
-    if (extra instanceof Markup) {
-      if (extra.type === 'inline') {
-        const keyboard: IInlineKeyboard = { inline_keyboard: extra.rows }
-        resultExtra = { reply_markup: keyboard }
-      } else if (extra.type === 'reply') {
-        const keyboard: IReplyKeyboard = { keyboard: extra.rows }
-        resultExtra = { reply_markup: keyboard }
-      } else if (extra.type === 'remove') {
-        const keyboard: IRemoveKeyboard = { remove_keyboard: true }
-        resultExtra = { reply_markup: keyboard }
-      }
-    } else {
-      resultExtra = extra
-    }
-
-    const initExtra: IMessageExtra = {
-      chat_id: this.from && this.from.id,
-      parse_mode: 'HTML',
-      text,
-      ...resultExtra,
-    }
-
-    return await this.fetch<IMessage>('/sendMessage', initExtra)
   }
 }
 
@@ -74,8 +42,9 @@ export class Context<T> implements IContext {
   msg: Msg
   props: Partial<T> = {}
   session: any = {}
+  api: TelegramMethods
 
-  constructor(update: IUpdate, connectionUri: string) {
+  constructor(update: IUpdate) {
     if (update.message) {
       this.message = update.message
       this.from = update.message?.from
@@ -84,6 +53,7 @@ export class Context<T> implements IContext {
       this.from = update.callback_query?.from
     }
 
-    this.msg = new Msg(this.from, this.message, connectionUri)
+    this.api = new TelegramMethods()
+    this.msg = new Msg(this.from, this.message)
   }
 }

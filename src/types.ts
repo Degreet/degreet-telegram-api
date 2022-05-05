@@ -1,4 +1,5 @@
 import { Msg } from './classes/Context'
+import { TelegramMethods } from './classes/TelegramMethods'
 
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
 export type nextMiddleware = () => any
@@ -12,6 +13,7 @@ export interface IContext {
   msg: Msg
   props: any
   session: any
+  api: TelegramMethods
 }
 
 export interface IInlineKeyboard {

@@ -20,6 +20,7 @@ bot.use(async (ctx: ICustomContext, next: nextMiddleware): Promise<void> => {
   console.log('global middleware worked')
   ctx.props.custom = 'Hello, world!'
   ctx.session.counter = ctx.session.counter + 1 || 1
+  ctx.api.send(ctx.from?.id, 'hello')
   next()
 })
 

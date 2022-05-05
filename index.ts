@@ -1,5 +1,6 @@
-import { TELEGRAM_BOT_API } from './src/constants'
 import { IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware } from './src/types'
+import { updateConnectionUri } from './src/classes/TelegramMethods'
+import { TELEGRAM_BOT_API } from './src/constants'
 import { Context } from './src/classes/Context'
 import { Session } from './src/classes/Session'
 import axios from 'axios'
@@ -15,6 +16,7 @@ class DegreetTelegram<T extends IContext> {
   constructor(token: string) {
     this.token = token
     this.connectionUri = TELEGRAM_BOT_API + this.token
+    updateConnectionUri(this.connectionUri)
   }
 
   private async fetch<T>(url: string): Promise<T> {
@@ -87,7 +89,7 @@ class DegreetTelegram<T extends IContext> {
         (handler: IHandler): boolean => handler.type === 'event' && events.includes(handler.event))
     }
 
-    const ctx: IContext = new Context<T>(update, this.connectionUri)
+    const ctx: IContext = new Context<T>(update)
 
     function passMiddlewares() {
       handlers.forEach((handler: IHandler): void => {
