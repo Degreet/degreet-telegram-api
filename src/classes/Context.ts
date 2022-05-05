@@ -65,11 +65,22 @@ export class Context<T> implements IContext {
   session: any = {}
   api: TelegramMethods
   callbackQuery: ICallbackQuery
+  params: string[] = []
 
   constructor(update: IUpdate) {
     if (update.message) {
       this.message = update.message
       this.from = update.message?.from
+
+      if (
+        update.message.entities && update.message.text &&
+        update.message.entities[0].type === 'bot_command' &&
+        update.message.text.length !== update.message.entities[0].length
+      ) {
+        this.params = update.message.text
+          .slice(update.message.entities[0].length + 1)
+          .split(' ')
+      }
     } else if (update.callback_query) {
       this.message = update.callback_query?.message
       this.from = update.callback_query?.from

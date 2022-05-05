@@ -1,7 +1,7 @@
 import { DegreetTelegram, Session } from './index'
 import { IContext, nextMiddleware } from './src/types'
-import config from 'config'
 import { Markup } from './src/classes/Markup'
+import config from 'config'
 
 interface ICustomContext extends IContext {
   counter?: number
@@ -35,6 +35,7 @@ bot.command('start', async (ctx: ICustomContext): Promise<void> => {
 
     console.log(ctx.props.custom)
     console.log(ctx.session)
+    console.log(ctx.params)
   } catch (e: any) {
     console.error(e)
   }

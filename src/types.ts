@@ -14,6 +14,7 @@ export interface IContext {
   props: any
   session: any
   api: TelegramMethods
+  params: string[]
 }
 
 export interface IInlineKeyboard {
