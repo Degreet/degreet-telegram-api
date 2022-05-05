@@ -100,3 +100,10 @@ export interface IButton {
   switch_inline_query?: string
   web_app?: IWebAppButton
 }
+
+export interface IAnswerCallbackQueryExtra {
+  callback_query_id: string,
+  text?: string,
+  show_alert?: boolean
+  url?: string
+}

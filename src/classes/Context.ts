@@ -1,4 +1,5 @@
 import {
+  ICallbackQuery,
   IChat,
   IContext,
   IMessage,
@@ -12,18 +13,20 @@ import { TelegramMethods } from './TelegramMethods'
 export class Msg {
   chat?: IChat
   from?: IChat
+  update?: IUpdate
   message?: IMessage
   message_id?: number
   date?: number
   text: string
 
-  constructor(from?: IChat, message?: IMessage) {
+  constructor(from?: IChat, message?: IMessage, update?: IUpdate) {
     this.from = from
     this.message = message
     this.chat = message && message.chat
     this.message_id = message && message.message_id
     this.date = message && message.date
     this.text = message && message.text || ''
+    this.update = update
   }
 
   async send(text: string, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
@@ -31,7 +34,25 @@ export class Msg {
       if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().send(this.from.id, text, extra)
     } catch (e: any) {
-      throw new Error(`TelegramError ${e.message}`)
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async toast(text: string): Promise<IMessage | void> {
+    try {
+      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().toast(this.update?.callback_query?.id, text)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async alert(text: string): Promise<IMessage | void> {
+    try {
+      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().alert(this.update?.callback_query?.id, text)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
     }
   }
 }
@@ -43,6 +64,7 @@ export class Context<T> implements IContext {
   props: Partial<T> = {}
   session: any = {}
   api: TelegramMethods
+  callbackQuery: ICallbackQuery
 
   constructor(update: IUpdate) {
     if (update.message) {
@@ -51,9 +73,10 @@ export class Context<T> implements IContext {
     } else if (update.callback_query) {
       this.message = update.callback_query?.message
       this.from = update.callback_query?.from
+      this.callbackQuery = update.callback_query
     }
 
     this.api = new TelegramMethods()
-    this.msg = new Msg(this.from, this.message)
+    this.msg = new Msg(this.from, this.message, update)
   }
 }

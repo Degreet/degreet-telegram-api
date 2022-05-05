@@ -1,4 +1,11 @@
-import { IInlineKeyboard, IMessage, IMessageExtra, IRemoveKeyboard, IReplyKeyboard } from '../types'
+import {
+  IAnswerCallbackQueryExtra,
+  IInlineKeyboard,
+  IMessage,
+  IMessageExtra,
+  IRemoveKeyboard,
+  IReplyKeyboard
+} from '../types'
 import { Markup } from './Markup'
 import axios from 'axios'
 
@@ -11,7 +18,7 @@ export class TelegramMethods {
       const { data } = await axios.get(connectionUri + url, { params: extra })
       return data.result
     } catch (e: any) {
-      throw new Error(`TelegramError: ${e.message}`)
+      throw new Error(`TelegramError: ${e.response.data.description}`)
     }
   }
 
@@ -44,7 +51,31 @@ export class TelegramMethods {
 
       return await TelegramMethods.fetch<IMessage>('/sendMessage', initExtra)
     } catch (e: any) {
-      throw new Error(`TelegramError: ${e.message}`)
+      throw new Error(`TelegramError: ${e.response.data.description}`)
+    }
+  }
+
+  async toast(callbackQueryId?: string, text?: string, showAlert?: boolean): Promise<any> {
+    try {
+      if (!callbackQueryId) return
+
+      const extra: IAnswerCallbackQueryExtra = {
+        callback_query_id: callbackQueryId,
+        show_alert: showAlert,
+        text,
+      }
+
+      return await TelegramMethods.fetch<IMessage>('/answerCallbackQuery', extra)
+    } catch (e: any) {
+      throw new Error(`TelegramError: ${e.response.data.description}`)
+    }
+  }
+
+  async alert(callbackQueryId?: string, text?: string): Promise<any> {
+    try {
+      return await this.toast(callbackQueryId, text, true)
+    } catch (e: any) {
+      throw new Error(`TelegramError: ${e.response.data.description}`)
     }
   }
 }

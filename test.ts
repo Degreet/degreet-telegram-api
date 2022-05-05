@@ -45,6 +45,7 @@ bot.on(
   async (ctx: IContext): Promise<void> => {
     try {
       console.log(ctx)
+      ctx.msg.alert('hi')
     } catch (e: any) {
       console.error(e)
     }
