@@ -43,7 +43,6 @@ export class Msg {
     let resultExtra: IMessageExtra = {}
 
     if (extra instanceof Markup) {
-
       if (extra.type === 'inline') {
         const keyboard: IInlineKeyboard = { inline_keyboard: extra.rows }
         resultExtra = { reply_markup: keyboard }

@@ -14,6 +14,8 @@ interface ISession {
 const token: string = config.get<string>('botToken')
 const bot: DegreetTelegram<ICustomContext> = new DegreetTelegram<ICustomContext>(token)
 
+bot.use(new Session<ISession>().middleware())
+
 bot.use(async (ctx: ICustomContext, next: nextMiddleware): Promise<void> => {
   console.log('global middleware worked')
   ctx.props.custom = 'Hello, world!'
@@ -53,6 +55,5 @@ bot.on(
 )
 
 bot.launch().then(() => {
-  bot.use(new Session<ISession>().middleware())
   console.log(`started on @${bot.botInfo.username}`)
 })
