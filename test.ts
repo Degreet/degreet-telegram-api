@@ -3,20 +3,20 @@ import { IContext, nextMiddleware } from './src/types'
 import { Markup } from './src/classes/Markup'
 import config from 'config'
 
-interface ICustomContext extends IContext {
-  counter?: number
+interface IProps extends IContext {
+  custom?: string
 }
 
 interface ISession {
-  testProp?: string
+  counter?: string
 }
 
 const token: string = config.get<string>('botToken')
-const bot: DegreetTelegram<ICustomContext> = new DegreetTelegram<ICustomContext>(token)
+const bot: DegreetTelegram<IProps> = new DegreetTelegram<IProps>(token)
 
 bot.use(new Session<ISession>().middleware())
 
-bot.use(async (ctx: ICustomContext, next: nextMiddleware): Promise<void> => {
+bot.use(async (ctx: IContext, next: nextMiddleware): Promise<void> => {
   console.log('global middleware worked')
   ctx.props.custom = 'Hello, world!'
   ctx.session.counter = ctx.session.counter + 1 || 1
@@ -24,7 +24,7 @@ bot.use(async (ctx: ICustomContext, next: nextMiddleware): Promise<void> => {
   next()
 })
 
-bot.command('start', async (ctx: ICustomContext): Promise<void> => {
+bot.command('start', async (ctx: IContext): Promise<void> => {
   try {
     await ctx.msg.send(
       'Hello!',
@@ -53,13 +53,21 @@ bot.on(
   }
 )
 
+bot.listen('hello world', async (ctx: IContext) => {
+  try {
+    await ctx.msg.send('Hello, world!')
+  } catch (e: any) {
+    console.error(e)
+  }
+})
+
 bot.on(
   'text',
-  async (ctx: ICustomContext, next: nextMiddleware): Promise<void> => {
+  async (ctx: IContext, next: nextMiddleware): Promise<void> => {
     console.log('middleware worked')
     next()
   },
-  async (ctx: ICustomContext): Promise<void> => {
+  async (ctx: IContext): Promise<void> => {
     try {
       await ctx.msg.send(ctx.msg.text, new Markup('remove'))
     } catch (e: any) {

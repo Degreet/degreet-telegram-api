@@ -44,6 +44,15 @@ class DegreetTelegram<T extends IContext> {
     })
   }
 
+  public listen(text: string, ...handlers: middleware[]): void {
+    this.handlers.push({
+      text,
+      type: 'event',
+      event: 'text',
+      middlewares: handlers,
+    })
+  }
+
   public command(text: string, ...handlers: middleware[]): void {
     this.handlers.push({
       text,
@@ -85,8 +94,17 @@ class DegreetTelegram<T extends IContext> {
         handler.type === 'event' && update.callback_query?.data === handler.event
       ))
     } else {
-      handlers = this.handlers.filter(
-        (handler: IHandler): boolean => handler.type === 'event' && events.includes(handler.event))
+      handlers = this.handlers.filter((handler: IHandler): boolean => (
+        handler.type === 'event' && handler.event === 'text' && handler.text === update.message?.text
+      ))
+
+      console.log(handlers, this.handlers)
+
+      if (!handlers || !handlers.length) {
+        handlers = this.handlers.filter((handler: IHandler): boolean => (
+          handler.type === 'event' && events.includes(handler.event) && !handler.text
+        ))
+      }
     }
 
     const ctx: IContext = new Context<T>(update)
