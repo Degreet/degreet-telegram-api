@@ -1,6 +1,7 @@
 import { TELEGRAM_BOT_API } from './src/constants'
-import { IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware } from './src/interfaces'
+import { IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware } from './src/types'
 import { Context } from './src/classes/Context'
+import { Session } from './src/classes/Session'
 import axios from 'axios'
 
 class DegreetTelegram<T extends IContext> {
@@ -116,4 +117,4 @@ class DegreetTelegram<T extends IContext> {
   }
 }
 
-export { DegreetTelegram, Context }
+export { DegreetTelegram, Context, Session }

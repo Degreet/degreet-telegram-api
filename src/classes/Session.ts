@@ -1,4 +1,4 @@
-import { IContext, middleware, nextMiddleware, sessionItem } from '../interfaces'
+import { IContext, middleware, nextMiddleware, sessionItem } from '../types'
 
 export class Session<T> {
   session: sessionItem<Partial<T>>[] = []

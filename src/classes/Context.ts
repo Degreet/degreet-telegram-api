@@ -1,4 +1,4 @@
-import { IChat, IContext, IMessage, IMessageExtra, IUpdate } from '../interfaces'
+import { IChat, IContext, IMessage, IMessageExtra, IUpdate } from '../types'
 import axios from 'axios'
 
 export class Msg {

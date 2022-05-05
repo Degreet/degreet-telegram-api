@@ -1,6 +1,5 @@
-import { DegreetTelegram } from './index'
-import { IContext, nextMiddleware } from './src/interfaces'
-import { Session } from './src/classes/Session'
+import { DegreetTelegram, Session } from './index'
+import { IContext, nextMiddleware } from './src/types'
 import config from 'config'
 
 interface ICustomContext extends IContext {
