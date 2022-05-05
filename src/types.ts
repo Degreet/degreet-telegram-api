@@ -3,6 +3,8 @@ import { Msg } from './classes/Context'
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
 export type nextMiddleware = () => any
 export type sessionItem<T> = [number, T]
+export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requestLocation' | 'webApp' | 'url' | 'switchInlineQuery'
+export type keyboardType = 'inline' | 'reply' | 'remove'
 
 export interface IContext {
   from?: IChat
@@ -10,6 +12,18 @@ export interface IContext {
   msg: Msg
   props: any
   session: any
+}
+
+export interface IInlineKeyboard {
+  inline_keyboard: IButton[][]
+}
+
+export interface IReplyKeyboard {
+  keyboard: IButton[][]
+}
+
+export interface IRemoveKeyboard {
+  remove_keyboard: boolean
 }
 
 export interface IMessageExtra {
@@ -21,7 +35,7 @@ export interface IMessageExtra {
   protect_content?: boolean
   reply_to_message_id?: boolean
   allow_sending_without_reply?: boolean
-  reply_markup?: any
+  reply_markup?: IInlineKeyboard | IReplyKeyboard | IRemoveKeyboard
 }
 
 export interface IHandler {
@@ -60,4 +74,18 @@ export interface IEntity {
   offset: number
   length: number
   type: 'bot_command' | 'bold' | string
+}
+
+export interface IWebAppButton {
+  url: string
+}
+
+export interface IButton {
+  text: string
+  url?: string
+  callback_data?: string
+  request_contact?: boolean
+  request_location?: boolean
+  switch_inline_query?: string
+  web_app?: IWebAppButton
 }

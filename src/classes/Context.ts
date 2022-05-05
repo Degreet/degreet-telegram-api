@@ -1,5 +1,15 @@
-import { IChat, IContext, IMessage, IMessageExtra, IUpdate } from '../types'
+import {
+  IChat,
+  IContext,
+  IInlineKeyboard,
+  IMessage,
+  IMessageExtra,
+  IRemoveKeyboard,
+  IReplyKeyboard,
+  IUpdate
+} from '../types'
 import axios from 'axios'
+import { Markup } from './Markup'
 
 export class Msg {
   chat?: IChat
@@ -29,12 +39,30 @@ export class Msg {
     }
   }
 
-  async send(text: string, extra: IMessageExtra = {}): Promise<IMessage> {
+  async send(text: string, extra: IMessageExtra | Markup = {}): Promise<IMessage> {
+    let resultExtra: IMessageExtra = {}
+
+    if (extra instanceof Markup) {
+
+      if (extra.type === 'inline') {
+        const keyboard: IInlineKeyboard = { inline_keyboard: extra.rows }
+        resultExtra = { reply_markup: keyboard }
+      } else if (extra.type === 'reply') {
+        const keyboard: IReplyKeyboard = { keyboard: extra.rows }
+        resultExtra = { reply_markup: keyboard }
+      } else if (extra.type === 'remove') {
+        const keyboard: IRemoveKeyboard = { remove_keyboard: true }
+        resultExtra = { reply_markup: keyboard }
+      }
+    } else {
+      resultExtra = extra
+    }
+
     const initExtra: IMessageExtra = {
       chat_id: this.from && this.from.id,
       parse_mode: 'HTML',
       text,
-      ...extra,
+      ...resultExtra,
     }
 
     return await this.fetch<IMessage>('/sendMessage', initExtra)
