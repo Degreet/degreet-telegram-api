@@ -1,0 +1,1 @@
+export const TELEGRAM_BOT_API: string = "https://api.telegram.org/bot"
