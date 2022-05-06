@@ -127,3 +127,13 @@ export interface IEditMessageTextExtra extends IDeleteMessageTextExtra {
   disable_web_page_preview?: boolean
   reply_markup?: keyboard
 }
+
+export interface IGetChatMemberExtra {
+  chat_id: string | number
+  user_id: number
+}
+
+export interface IGetChatMemberResponse {
+  status: 'kicked' | 'left' | 'restricted' | 'member' | 'administrator' | 'creator'
+  user: IChat
+}

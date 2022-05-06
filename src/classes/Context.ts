@@ -2,6 +2,7 @@ import {
   ICallbackQuery,
   IChat,
   IContext,
+  IGetChatMemberResponse,
   IMessage,
   IMessageExtra,
   IUpdate
@@ -84,6 +85,25 @@ export class Msg {
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
 
       return new TelegramMethods().del(this.from.id, this.message_id)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async getChatMember(chatId: number | string): Promise<IGetChatMemberResponse | void> {
+    try {
+      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().getChatMember(chatId, this.from.id)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async checkSubscription(chatId: number | string): Promise<boolean> {
+    try {
+      const member = await this.getChatMember(chatId)
+      if (!member) return false
+      return ['creator', 'administrator', 'member'].includes(member.status)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }

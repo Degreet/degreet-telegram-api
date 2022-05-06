@@ -1,5 +1,10 @@
 import {
-  IAnswerCallbackQueryExtra, IDeleteMessageTextExtra, IEditMarkupExtra, IEditMessageTextExtra,
+  IAnswerCallbackQueryExtra,
+  IDeleteMessageTextExtra,
+  IEditMarkupExtra,
+  IEditMessageTextExtra,
+  IGetChatMemberExtra,
+  IGetChatMemberResponse,
   IInlineKeyboard,
   IMessage,
   IMessageExtra,
@@ -13,7 +18,7 @@ let connectionUri = ''
 export const updateConnectionUri = (uri: string): string => connectionUri = uri
 
 export class TelegramMethods {
-  private static async fetch<T>(url: string, extra: IMessageExtra): Promise<T> {
+  private static async fetch<T>(url: string, extra: any): Promise<T> {
     try {
       const { data } = await axios.get(connectionUri + url, { params: extra })
       return data.result
@@ -55,7 +60,7 @@ export class TelegramMethods {
 
       return await TelegramMethods.fetch<IMessage>('/sendMessage', initExtra)
     } catch (e: any) {
-      throw new Error(`TelegramError: ${e.response.data.description}`)
+      throw e
     }
   }
 
@@ -71,7 +76,7 @@ export class TelegramMethods {
 
       return await TelegramMethods.fetch<IMessage>('/answerCallbackQuery', extra)
     } catch (e: any) {
-      throw new Error(`TelegramError: ${e.response.data.description}`)
+      throw e
     }
   }
 
@@ -79,7 +84,7 @@ export class TelegramMethods {
     try {
       return await this.toast(callbackQueryId, text, true)
     } catch (e: any) {
-      throw new Error(`TelegramError: ${e.response.data.description}`)
+      throw e
     }
   }
 
@@ -98,19 +103,23 @@ export class TelegramMethods {
 
       return await TelegramMethods.fetch<IMessage>('/editMessageText', data)
     } catch (e: any) {
-      throw new Error(`TelegramError: ${e.response.data.description}`)
+      throw e
     }
   }
 
   async del(userId?: number, msgId?: number): Promise<boolean> {
-    if (!userId || !msgId) return false
+    try {
+      if (!userId || !msgId) return false
 
-    const data: IDeleteMessageTextExtra = {
-      chat_id: userId,
-      message_id: msgId,
+      const data: IDeleteMessageTextExtra = {
+        chat_id: userId,
+        message_id: msgId,
+      }
+
+      return await TelegramMethods.fetch<boolean>('/deleteMessage', data)
+    } catch (e: any) {
+      throw e
     }
-
-    return await TelegramMethods.fetch<boolean>('/deleteMessage', data)
   }
 
   async editMarkup(userId?: number, msgId?: number, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
@@ -126,7 +135,20 @@ export class TelegramMethods {
 
       return await TelegramMethods.fetch<IMessage>('/editMessageReplyMarkup', data)
     } catch (e: any) {
-      throw new Error(`TelegramError: ${e.response.data.description}`)
+      throw e
+    }
+  }
+
+  async getChatMember(chatId: number | string, userId: number): Promise<IGetChatMemberResponse | void> {
+    try {
+      const data: IGetChatMemberExtra = {
+        chat_id: chatId,
+        user_id: userId,
+      }
+
+      return await TelegramMethods.fetch<IGetChatMemberResponse | void>('/getChatMember', data)
+    } catch (e: any) {
+      throw e
     }
   }
 }

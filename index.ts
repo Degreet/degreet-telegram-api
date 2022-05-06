@@ -1,11 +1,14 @@
 import { IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware } from './src/types'
-import { updateConnectionUri } from './src/classes/TelegramMethods'
 import { TELEGRAM_BOT_API } from './src/constants'
+
+import { updateConnectionUri } from './src/classes/TelegramMethods'
 import { Context } from './src/classes/Context'
 import { Session } from './src/classes/Session'
-import axios from 'axios'
+
 import { BlockBuilder } from './src/classes/BlockBuilder'
 import { Block } from './src/classes/Block'
+
+import axios from 'axios'
 
 class DegreetTelegram<T extends IContext> extends BlockBuilder {
   token: string
