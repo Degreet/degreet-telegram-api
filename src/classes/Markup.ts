@@ -1,16 +1,17 @@
-import { allowedTypes, IButton, keyboardType } from '../types'
+import { allowedTypes, IButton, IMessageExtra, keyboardType, parseModeTypes } from '../types'
 
 export class Markup {
   type: keyboardType
   removeKeyboard: boolean = false
   unresolvedBtns: IButton[] = []
   rows: IButton[][] = []
+  extra: IMessageExtra = {}
 
   constructor(type: keyboardType) {
     this.type = type
   }
 
-  public btn(type: allowedTypes, text: string, action: string, hidden?: boolean): Markup {
+  public btn(type: allowedTypes, text: string, action?: string, hidden?: boolean): Markup {
     let button: IButton
 
     switch (type) {
@@ -69,6 +70,21 @@ export class Markup {
 
   public remove(): Markup {
     this.removeKeyboard = true
+    return this
+  }
+
+  public disableWebPagePreview(): Markup {
+    this.extra.disable_web_page_preview = true
+    return this
+  }
+
+  public setParseMode(parseMode: parseModeTypes): Markup {
+    this.extra.parse_mode = parseMode
+    return this
+  }
+
+  public replyTo(msgId?: number): Markup {
+    this.extra.reply_to_message_id = msgId
     return this
   }
 }

@@ -29,17 +29,24 @@ export class TelegramMethods {
 
   private static extraMarkup(markup: Markup | IMessageExtra): IMessageExtra | any {
     if (markup instanceof Markup) {
+      let replyMarkup
+
       if (markup.type === 'inline') {
         const keyboard: IInlineKeyboard = { inline_keyboard: markup.rows }
-        return { reply_markup: keyboard }
+        replyMarkup = { reply_markup: keyboard }
       } else if (markup.type === 'reply') {
-        const keyboard: IReplyKeyboard = { keyboard: markup.rows }
-        return { reply_markup: keyboard }
+        const keyboard: IReplyKeyboard = { keyboard: markup.rows, resize_keyboard: true }
+        replyMarkup = { reply_markup: keyboard }
       } else if (markup.type === 'remove') {
         const keyboard: IRemoveKeyboard = { remove_keyboard: true }
-        return { reply_markup: keyboard }
+        replyMarkup = { reply_markup: keyboard }
       } else {
-        return markup
+        replyMarkup = markup
+      }
+
+      return {
+        ...replyMarkup,
+        ...markup.extra,
       }
     } else {
       return markup

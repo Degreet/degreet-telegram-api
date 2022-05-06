@@ -25,6 +25,7 @@ export interface IInlineKeyboard {
 
 export interface IReplyKeyboard {
   keyboard: IButton[][]
+  resize_keyboard?: boolean
 }
 
 export interface IRemoveKeyboard {
@@ -38,7 +39,7 @@ export interface IMessageExtra {
   disable_web_page_preview?: boolean
   disable_notification?: boolean
   protect_content?: boolean
-  reply_to_message_id?: boolean
+  reply_to_message_id?: number
   allow_sending_without_reply?: boolean
   reply_markup?: keyboard
 }
@@ -91,7 +92,7 @@ export interface IEntity {
 }
 
 export interface IWebAppButton {
-  url: string
+  url?: string
 }
 
 export interface IButton {

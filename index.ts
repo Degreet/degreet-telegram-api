@@ -88,8 +88,6 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
         handler.type === 'event' && handler.event === 'text' && handler.text === update.message?.text
       ))
 
-      console.log(handlers, this.handlers)
-
       if (!handlers || !handlers.length) {
         handlers = this.handlers.filter((handler: IHandler): boolean => (
           handler.type === 'event' && events.includes(handler.event) && !handler.text
