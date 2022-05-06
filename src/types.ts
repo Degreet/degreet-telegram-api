@@ -4,8 +4,10 @@ import { TelegramMethods } from './classes/TelegramMethods'
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
 export type nextMiddleware = () => any
 export type sessionItem<T> = [number, T]
+export type keyboard = IInlineKeyboard | IReplyKeyboard | IRemoveKeyboard
 export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requestLocation' | 'webApp' | 'url' | 'switchInlineQuery'
 export type keyboardType = 'inline' | 'reply' | 'remove'
+export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 
 export interface IContext {
   from?: IChat
@@ -32,13 +34,13 @@ export interface IRemoveKeyboard {
 export interface IMessageExtra {
   chat_id?: number
   text?: string
-  parse_mode?: 'HTML' | 'Markdown' | 'MarkdownV2'
+  parse_mode?: parseModeTypes
   disable_web_page_preview?: boolean
   disable_notification?: boolean
   protect_content?: boolean
   reply_to_message_id?: boolean
   allow_sending_without_reply?: boolean
-  reply_markup?: IInlineKeyboard | IReplyKeyboard | IRemoveKeyboard
+  reply_markup?: keyboard
 }
 
 export interface IHandler {
@@ -107,4 +109,21 @@ export interface IAnswerCallbackQueryExtra {
   text?: string,
   show_alert?: boolean
   url?: string
+}
+
+export interface IDeleteMessageTextExtra {
+  chat_id: number,
+  message_id: number,
+}
+
+export interface IEditMarkupExtra extends IDeleteMessageTextExtra {
+  reply_markup?: keyboard
+}
+
+export interface IEditMessageTextExtra extends IDeleteMessageTextExtra {
+  text: string
+  parse_mode?: parseModeTypes
+  entities?: IEntity[]
+  disable_web_page_preview?: boolean
+  reply_markup?: keyboard
 }

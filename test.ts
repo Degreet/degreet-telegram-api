@@ -46,12 +46,24 @@ bot.on(
   async (ctx: IContext): Promise<void> => {
     try {
       console.log(ctx)
+      await ctx.msg.edit('nice')
       ctx.msg.alert('hi')
     } catch (e: any) {
       console.error(e)
     }
   }
 )
+
+bot.on('test2', async (ctx: IContext): Promise<void> => {
+  try {
+    await ctx.msg.editMarkup(
+      new Markup('inline')
+        .btn('cb', 'hello', 'hello').row()
+    )
+  } catch (e: any) {
+    console.error(e)
+  }
+})
 
 bot.listen('hello world', async (ctx: IContext) => {
   try {

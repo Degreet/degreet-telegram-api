@@ -55,6 +55,39 @@ export class Msg {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
   }
+
+  async edit(text: string, extra?: IMessageExtra | Markup): Promise<IMessage | void> {
+    try {
+      if (!this.from || !this.message_id)
+        throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
+
+      return new TelegramMethods().edit(this.from.id, this.message_id, text, extra)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async editMarkup(extra?: IMessageExtra | Markup): Promise<IMessage | void> {
+    try {
+      if (!this.from || !this.message_id)
+        throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
+
+      return new TelegramMethods().editMarkup(this.from.id, this.message_id, extra)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async del(): Promise<boolean> {
+    try {
+      if (!this.from || !this.message_id)
+        throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
+
+      return new TelegramMethods().del(this.from.id, this.message_id)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
 }
 
 export class Context<T> implements IContext {
