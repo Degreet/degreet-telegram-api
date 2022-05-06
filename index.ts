@@ -9,11 +9,23 @@ import { BlockBuilder } from './src/classes/BlockBuilder'
 import { Block } from './src/classes/Block'
 
 import axios from 'axios'
+import { BlockScene } from './src/classes/BlockScene'
+import { SceneController } from './src/classes/SceneController'
+
+// TODO: Scenes
+// TODO: Listen entities
+// TODO: One-time-scene (e.g. menu)
+// TODO: Markup layouts
+// TODO: I18n
+// TODO: Delete handler
+// TODO: Payments
 
 class DegreetTelegram<T extends IContext> extends BlockBuilder {
   token: string
   connectionUri: string
   botInfo: IChat
+  scenes: BlockScene[] = []
+  sceneController: SceneController = new SceneController(this.scenes)
 
   constructor(token: string) {
     super()
@@ -35,8 +47,8 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
     }
   }
 
-  public use(...middlewares: (middleware | Block)[]): void {
-    middlewares.forEach((middleware: middleware | Block): void => {
+  public use(...middlewares: (middleware | Block | BlockScene)[]): void {
+    middlewares.forEach((middleware: middleware | Block | BlockScene): void => {
       if (middleware instanceof Block) {
         const handlers: IHandler[] = middleware.handlers
 
@@ -45,6 +57,8 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
         })
 
         this.handlers.push(...handlers)
+      } else if (middleware instanceof BlockScene) {
+        this.scenes.push(middleware)
       } else {
         this.middlewares.push(middleware)
       }
@@ -65,6 +79,23 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
     let handlers: IHandler[] = []
     const entities: IEntity[] | void = update.message?.entities
 
+    const ctx: IContext = new Context<T>(update, this.sceneController)
+    let availableHandlers: IHandler[] = []
+
+    if (this.sceneController.getActiveScene(ctx.from?.id)) {
+      const scene = this.scenes.find((scene: BlockScene) => (
+        scene.name === this.sceneController.getActiveScene(ctx.from?.id)
+      ))
+
+      if (!scene) {
+        availableHandlers = this.handlers
+      } else {
+        availableHandlers = scene.handlers
+      }
+    } else {
+      availableHandlers = this.handlers
+    }
+
     const commandEntities: IEntity[] | void = entities?.filter(
       (entity: IEntity): boolean => entity.type === 'bot_command')
 
@@ -72,7 +103,7 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
       commandEntities.forEach((entity: IEntity): void => {
         handlers = [
           ...handlers,
-          ...this.handlers.filter((handler: IHandler): boolean => {
+          ...availableHandlers.filter((handler: IHandler): boolean => {
             if (handler.type !== 'command') return false
             if (!update.message?.text) return false
             return update.message.text.slice(entity.offset + 1, entity.length) === handler.text
@@ -80,22 +111,20 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
         ]
       })
     } else if (update.callback_query) {
-      handlers = this.handlers.filter((handler: IHandler): boolean => (
+      handlers = availableHandlers.filter((handler: IHandler): boolean => (
         handler.type === 'event' && update.callback_query?.data === handler.event
       ))
     } else {
-      handlers = this.handlers.filter((handler: IHandler): boolean => (
+      handlers = availableHandlers.filter((handler: IHandler): boolean => (
         handler.type === 'event' && handler.event === 'text' && handler.text === update.message?.text
       ))
 
       if (!handlers || !handlers.length) {
-        handlers = this.handlers.filter((handler: IHandler): boolean => (
+        handlers = availableHandlers.filter((handler: IHandler): boolean => (
           handler.type === 'event' && events.includes(handler.event) && !handler.text
         ))
       }
     }
-
-    const ctx: IContext = new Context<T>(update)
 
     function passMiddlewares() {
       handlers.forEach((handler: IHandler): void => {
@@ -129,4 +158,10 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
   }
 }
 
-export { DegreetTelegram, Context, Session, Block }
+export {
+  DegreetTelegram,
+  Context,
+  Session,
+  Block,
+  BlockScene,
+}

@@ -28,6 +28,8 @@ block.on('check', async (ctx: IContext): Promise<any> => {
       new Markup('inline')
         .btn('cb', 'Get Bonus!', 'bonus').row()
     )
+
+    ctx.scene.enter('home')
   } catch (e: any) {
     console.error(e)
   }

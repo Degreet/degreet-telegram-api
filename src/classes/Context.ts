@@ -4,12 +4,13 @@ import {
   IContext,
   IGetChatMemberResponse,
   IMessage,
-  IMessageExtra,
+  IMessageExtra, ISceneContext,
   IUpdate
 } from '../types'
 
 import { Markup } from './Markup'
 import { TelegramMethods } from './TelegramMethods'
+import { SceneController } from './SceneController'
 
 export class Msg {
   chat?: IChat
@@ -119,8 +120,9 @@ export class Context<T> implements IContext {
   api: TelegramMethods
   callbackQuery: ICallbackQuery
   params: string[] = []
+  scene: ISceneContext
 
-  constructor(update: IUpdate) {
+  constructor(update: IUpdate, sceneController: SceneController) {
     if (update.message) {
       this.message = update.message
       this.from = update.message?.from
@@ -142,5 +144,10 @@ export class Context<T> implements IContext {
 
     this.api = new TelegramMethods()
     this.msg = new Msg(this.from, this.message, update)
+
+    const enter = (name: string): void => sceneController.enter(this.from?.id, this, name)
+    const leave = (): void => sceneController.leave(this.from?.id)
+
+    this.scene = { enter, leave }
   }
 }

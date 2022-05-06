@@ -4,6 +4,7 @@ import { TelegramMethods } from './classes/TelegramMethods'
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
 export type nextMiddleware = () => any
 export type sessionItem<T> = [number, T]
+export type sceneInfoItem = [number, IScene]
 export type keyboard = IInlineKeyboard | IReplyKeyboard | IRemoveKeyboard
 export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requestLocation' | 'webApp' | 'url' | 'switchInlineQuery'
 export type keyboardType = 'inline' | 'reply' | 'remove'
@@ -17,6 +18,16 @@ export interface IContext {
   session: any
   api: TelegramMethods
   params: string[]
+  scene: ISceneContext
+}
+
+export interface ISceneContext {
+  enter: (name: string) => void
+  leave: () => void
+}
+
+export interface IScene {
+  activeScene: string | null
 }
 
 export interface IInlineKeyboard {
