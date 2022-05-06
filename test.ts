@@ -1,4 +1,4 @@
-import { DegreetTelegram, Session } from './index'
+import { Block, DegreetTelegram, Session } from './index'
 import { IContext, nextMiddleware } from './src/types'
 import { Markup } from './src/classes/Markup'
 import config from 'config'
@@ -14,7 +14,17 @@ interface ISession {
 const token: string = config.get<string>('botToken')
 const bot: DegreetTelegram<IProps> = new DegreetTelegram<IProps>(token)
 
+const block = new Block()
+
+block.use((ctx, next) => {
+  console.log(2)
+  next()
+})
+
+block.command('end', () => console.log(1))
+
 bot.use(new Session<ISession>().middleware())
+bot.use(block)
 
 bot.use(async (ctx: IContext, next: nextMiddleware): Promise<void> => {
   console.log('global middleware worked')

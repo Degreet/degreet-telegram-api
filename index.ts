@@ -4,16 +4,16 @@ import { TELEGRAM_BOT_API } from './src/constants'
 import { Context } from './src/classes/Context'
 import { Session } from './src/classes/Session'
 import axios from 'axios'
+import { BlockBuilder } from './src/classes/BlockBuilder'
+import { Block } from './src/classes/Block'
 
-class DegreetTelegram<T extends IContext> {
+class DegreetTelegram<T extends IContext> extends BlockBuilder {
   token: string
   connectionUri: string
-
   botInfo: IChat
-  handlers: IHandler[] = []
-  middlewares: middleware[] = []
 
   constructor(token: string) {
+    super()
     this.token = token
     this.connectionUri = TELEGRAM_BOT_API + this.token
     updateConnectionUri(this.connectionUri)
@@ -32,32 +32,19 @@ class DegreetTelegram<T extends IContext> {
     }
   }
 
-  public use(...middlewares: middleware[]): void {
-    this.middlewares.push(...middlewares)
-  }
+  public use(...middlewares: (middleware | Block)[]): void {
+    middlewares.forEach((middleware: middleware | Block): void => {
+      if (middleware instanceof Block) {
+        const handlers: IHandler[] = middleware.handlers
 
-  public on(event: string, ...handlers: middleware[]): void {
-    this.handlers.push({
-      event,
-      type: 'event',
-      middlewares: handlers,
-    })
-  }
+        handlers.forEach((handler: IHandler): void => {
+          handler.middlewares.unshift(...middleware.middlewares)
+        })
 
-  public listen(text: string, ...handlers: middleware[]): void {
-    this.handlers.push({
-      text,
-      type: 'event',
-      event: 'text',
-      middlewares: handlers,
-    })
-  }
-
-  public command(text: string, ...handlers: middleware[]): void {
-    this.handlers.push({
-      text,
-      type: 'command',
-      middlewares: handlers,
+        this.handlers.push(...handlers)
+      } else {
+        this.middlewares.push(middleware)
+      }
     })
   }
 
@@ -141,4 +128,4 @@ class DegreetTelegram<T extends IContext> {
   }
 }
 
-export { DegreetTelegram, Context, Session }
+export { DegreetTelegram, Context, Session, Block }
