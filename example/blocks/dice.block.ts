@@ -1,7 +1,6 @@
-import { Block } from '../../index'
+import { Block, Markup } from '../../index'
 import { ICustomContext } from '../types'
 import { IMessage } from '../../src/types'
-import { Markup } from '../../src/classes/Markup'
 
 const block: Block = new Block()
 

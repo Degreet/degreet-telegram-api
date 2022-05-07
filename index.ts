@@ -5,6 +5,7 @@ import { updateConnectionUri } from './src/classes/TelegramMethods'
 import { Context } from './src/classes/Context'
 import { Session } from './src/classes/Session'
 import { Layout } from './src/classes/Layout'
+import { Markup } from './src/classes/Markup'
 
 import { BlockBuilder } from './src/classes/BlockBuilder'
 import { Block } from './src/classes/Block'
@@ -214,4 +215,5 @@ export {
   BlockScene,
   StepScene,
   Layout,
+  Markup,
 }

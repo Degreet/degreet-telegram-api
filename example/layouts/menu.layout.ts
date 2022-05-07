@@ -1,6 +1,5 @@
-import { Layout } from '../../index'
+import { Layout, Markup } from '../../index'
 import { ICustomContext } from '../types'
-import { Markup } from '../../src/classes/Markup'
 
 const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<any> => {
   try {
