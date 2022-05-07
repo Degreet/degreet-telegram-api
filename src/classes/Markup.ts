@@ -1,4 +1,12 @@
-import { allowedTypes, IButton, IMarkupLayout, IMessageExtra, keyboardType, parseModeTypes } from '../types'
+import {
+  allowedTypes,
+  IButton,
+  IInlineKeyboard,
+  IMarkupLayout,
+  IMessageExtra, IRemoveKeyboard, IReplyKeyboard,
+  keyboardType,
+  parseModeTypes
+} from '../types'
 
 const layouts: IMarkupLayout[] = []
 
@@ -8,6 +16,7 @@ export class Markup {
   unresolvedBtns: IButton[] = []
   rows: IButton[][] = []
   extra: IMessageExtra = {}
+  placeholder?: string
 
   constructor(type: keyboardType) {
     this.type = type
@@ -109,5 +118,37 @@ export class Markup {
     }
 
     return this
+  }
+
+  public setPlaceholder(placeholder: string): Markup {
+    this.placeholder = placeholder
+    return this
+  }
+
+  public solveExtra(): IMessageExtra {
+    let replyMarkup
+
+    if (this.type === 'inline') {
+      const keyboard: IInlineKeyboard = { inline_keyboard: this.rows }
+      replyMarkup = { reply_markup: keyboard }
+    } else if (this.type === 'reply') {
+      const keyboard: IReplyKeyboard = {
+        keyboard: this.rows,
+        resize_keyboard: true,
+        input_field_placeholder: this.placeholder,
+      }
+
+      replyMarkup = { reply_markup: keyboard }
+    } else if (this.type === 'remove') {
+      const keyboard: IRemoveKeyboard = { remove_keyboard: true }
+      replyMarkup = { reply_markup: keyboard }
+    } else {
+      replyMarkup = this
+    }
+
+    return {
+      ...replyMarkup,
+      ...this.extra,
+    }
   }
 }

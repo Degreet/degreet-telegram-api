@@ -49,6 +49,7 @@ export interface IInlineKeyboard {
 export interface IReplyKeyboard {
   keyboard: IButton[][]
   resize_keyboard?: boolean
+  input_field_placeholder?: string
 }
 
 export interface IRemoveKeyboard {

@@ -15,9 +15,7 @@ import { SceneController } from './src/classes/SceneController'
 import axios from 'axios'
 import { Layout } from './src/classes/Layout'
 
-// TODO: I18n
-// TODO: Delete handler
-// TODO: Payments
+// TODO: Payments, on join request, work with photo, new chat member, file system
 
 class DegreetTelegram<T extends IContext> extends BlockBuilder {
   token: string

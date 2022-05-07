@@ -56,7 +56,12 @@ bot.use(subscription)
 bot.use(bonus)
 
 bot.on(/test_(.*)/, async (ctx) => {
-  console.log(ctx)
+  await ctx.msg.send(
+    'Hello!',
+    new Markup('reply')
+      .btn('base', 'Hello!').row()
+      .setPlaceholder('Enter button down')
+  )
 })
 
 const layout = new Layout('menu', async (ctx: IContext): Promise<any> => {

@@ -5,12 +5,10 @@ import {
   IEditMessageTextExtra,
   IGetChatMemberExtra,
   IGetChatMemberResponse,
-  IInlineKeyboard,
   IMessage,
   IMessageExtra,
-  IRemoveKeyboard,
-  IReplyKeyboard
 } from '../types'
+
 import { Markup } from './Markup'
 import axios from 'axios'
 
@@ -28,29 +26,7 @@ export class TelegramMethods {
   }
 
   private static extraMarkup(markup: Markup | IMessageExtra): IMessageExtra | any {
-    if (markup instanceof Markup) {
-      let replyMarkup
-
-      if (markup.type === 'inline') {
-        const keyboard: IInlineKeyboard = { inline_keyboard: markup.rows }
-        replyMarkup = { reply_markup: keyboard }
-      } else if (markup.type === 'reply') {
-        const keyboard: IReplyKeyboard = { keyboard: markup.rows, resize_keyboard: true }
-        replyMarkup = { reply_markup: keyboard }
-      } else if (markup.type === 'remove') {
-        const keyboard: IRemoveKeyboard = { remove_keyboard: true }
-        replyMarkup = { reply_markup: keyboard }
-      } else {
-        replyMarkup = markup
-      }
-
-      return {
-        ...replyMarkup,
-        ...markup.extra,
-      }
-    } else {
-      return markup
-    }
+    return markup instanceof Markup ? markup.solveExtra() : markup
   }
 
   async send(userId?: number, text?: string, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
