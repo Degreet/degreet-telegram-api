@@ -1,4 +1,4 @@
-import { BlockScene, DegreetTelegram, Session } from '../index'
+import { DegreetTelegram, Session, StepScene } from '../index'
 import { IContext, nextMiddleware } from '../src/types'
 import config from 'config'
 
@@ -12,24 +12,25 @@ interface ISession {
 const token: string = config.get<string>('botToken')
 const bot: DegreetTelegram<IContext> = new DegreetTelegram<IContext>(token)
 
-const scene = new BlockScene('home')
-
-scene.enter(async (ctx: IContext): Promise<any> => {
-  try {
-    await ctx.msg.send('You have entered to the scene')
-  } catch (e: any) {
-    console.error(e)
-  }
-})
-
-scene.command('test_scene', async (ctx: IContext): Promise<any> => {
-  try {
-    await ctx.msg.send('Test scene')
-    await ctx.scene.leave()
-  } catch (e: any) {
-    console.error(e)
-  }
-})
+const scene = new StepScene(
+  'test',
+  async (ctx: IContext): Promise<any> => {
+    try {
+      await ctx.msg.send('enter your name')
+      ctx.scene.next()
+    } catch (e: any) {
+      console.error(e)
+    }
+  },
+  async (ctx: IContext): Promise<any> => {
+    try {
+      console.log(ctx)
+      ctx.scene.leave()
+    } catch (e: any) {
+      console.error(e)
+    }
+  },
+)
 
 async function setupSession(ctx: IContext, next: nextMiddleware): Promise<any> {
   try {

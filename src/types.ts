@@ -1,5 +1,7 @@
 import { Msg } from './classes/Context'
 import { TelegramMethods } from './classes/TelegramMethods'
+import { BlockScene } from './classes/BlockScene'
+import { StepScene } from './classes/StepScene'
 
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
 export type nextMiddleware = () => any
@@ -9,6 +11,7 @@ export type keyboard = IInlineKeyboard | IReplyKeyboard | IRemoveKeyboard
 export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requestLocation' | 'webApp' | 'url' | 'switchInlineQuery'
 export type keyboardType = 'inline' | 'reply' | 'remove'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
+export type scene = BlockScene | StepScene
 
 export interface IContext {
   from?: IChat
@@ -24,10 +27,12 @@ export interface IContext {
 export interface ISceneContext {
   enter: (name: string) => void
   leave: () => void
+  next: () => void
 }
 
 export interface IScene {
   activeScene: string | null
+  middlewareIndex: number
 }
 
 export interface IInlineKeyboard {

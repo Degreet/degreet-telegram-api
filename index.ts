@@ -1,4 +1,4 @@
-import { IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware } from './src/types'
+import { IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware, scene } from './src/types'
 import { TELEGRAM_BOT_API } from './src/constants'
 
 import { updateConnectionUri } from './src/classes/TelegramMethods'
@@ -8,11 +8,12 @@ import { Session } from './src/classes/Session'
 import { BlockBuilder } from './src/classes/BlockBuilder'
 import { Block } from './src/classes/Block'
 
-import axios from 'axios'
+import { StepScene } from './src/classes/StepScene'
 import { BlockScene } from './src/classes/BlockScene'
 import { SceneController } from './src/classes/SceneController'
 
-// TODO: Scenes
+import axios from 'axios'
+
 // TODO: Listen entities
 // TODO: One-time-scene (e.g. menu)
 // TODO: Markup layouts
@@ -24,7 +25,7 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
   token: string
   connectionUri: string
   botInfo: IChat
-  scenes: BlockScene[] = []
+  scenes: scene[] = []
   sceneController: SceneController = new SceneController(this.scenes)
 
   constructor(token: string) {
@@ -47,8 +48,8 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
     }
   }
 
-  public use(...middlewares: (middleware | Block | BlockScene)[]): void {
-    middlewares.forEach((middleware: middleware | Block | BlockScene): void => {
+  public use(...middlewares: (middleware | Block | scene)[]): void {
+    middlewares.forEach((middleware: middleware | Block | scene): void => {
       if (middleware instanceof Block) {
         const handlers: IHandler[] = middleware.handlers
 
@@ -57,12 +58,28 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
         })
 
         this.handlers.push(...handlers)
-      } else if (middleware instanceof BlockScene) {
+      } else if (middleware instanceof BlockScene || middleware instanceof StepScene) {
         this.scenes.push(middleware)
       } else {
         this.middlewares.push(middleware)
       }
     })
+  }
+
+  private getAvailableHandlers(userId?: number): IHandler[] {
+    if (this.sceneController.getActiveScene(userId)) {
+      const scene = this.scenes.find((scene: scene) => (
+        scene.name === this.sceneController.getActiveScene(userId)
+      ))
+
+      if (!scene) {
+        return this.handlers
+      } else {
+        return scene.handlers
+      }
+    } else {
+      return this.handlers
+    }
   }
 
   private async handleUpdate(update: IUpdate): Promise<void> {
@@ -80,21 +97,8 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
     const entities: IEntity[] | void = update.message?.entities
 
     const ctx: IContext = new Context<T>(update, this.sceneController)
-    let availableHandlers: IHandler[] = []
-
-    if (this.sceneController.getActiveScene(ctx.from?.id)) {
-      const scene = this.scenes.find((scene: BlockScene) => (
-        scene.name === this.sceneController.getActiveScene(ctx.from?.id)
-      ))
-
-      if (!scene) {
-        availableHandlers = this.handlers
-      } else {
-        availableHandlers = scene.handlers
-      }
-    } else {
-      availableHandlers = this.handlers
-    }
+    const userId: number | undefined = ctx.from?.id
+    const availableHandlers: IHandler[] = this.getAvailableHandlers(userId)
 
     const commandEntities: IEntity[] | void = entities?.filter(
       (entity: IEntity): boolean => entity.type === 'bot_command')
@@ -114,6 +118,24 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
       handlers = availableHandlers.filter((handler: IHandler): boolean => (
         handler.type === 'event' && update.callback_query?.data === handler.event
       ))
+    } else if (events.includes('message') && this.sceneController.getActiveScene(userId)) {
+      const activeScene: string | null = this.sceneController.getActiveScene(userId)
+
+      if (activeScene) {
+        const scene: scene | undefined = this.scenes.find((scene: scene) => (
+          scene.name === this.sceneController.getActiveScene(userId)
+        ))
+
+        if (scene && scene.handlers.length) {
+          const activeIndex: number | null = this.sceneController.getActiveIndex(userId)
+          if (!activeIndex) return
+
+          const middleware = scene.handlers[0].middlewares[activeIndex]
+          if (!middleware) return
+
+          middleware(ctx, () => {})
+        }
+      }
     } else {
       handlers = availableHandlers.filter((handler: IHandler): boolean => (
         handler.type === 'event' && handler.event === 'text' && handler.text === update.message?.text
@@ -164,4 +186,5 @@ export {
   Session,
   Block,
   BlockScene,
+  StepScene,
 }

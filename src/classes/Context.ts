@@ -144,10 +144,14 @@ export class Context<T> implements IContext {
 
     this.api = new TelegramMethods()
     this.msg = new Msg(this.from, this.message, update)
+    this.scene = this.getSceneParams(sceneController)
+  }
 
+  private getSceneParams(sceneController: SceneController): ISceneContext {
     const enter = (name: string): void => sceneController.enter(this.from?.id, this, name)
     const leave = (): void => sceneController.leave(this.from?.id)
+    const next = (): void => sceneController.next(this.from?.id)
 
-    this.scene = { enter, leave }
+    return { enter, leave, next }
   }
 }

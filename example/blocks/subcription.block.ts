@@ -29,7 +29,7 @@ block.on('check', async (ctx: IContext): Promise<any> => {
         .btn('cb', 'Get Bonus!', 'bonus').row()
     )
 
-    ctx.scene.enter('home')
+    ctx.scene.enter('test')
   } catch (e: any) {
     console.error(e)
   }
