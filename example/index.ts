@@ -50,6 +50,10 @@ bot.use(scene)
 bot.use(subscription)
 bot.use(bonus)
 
+bot.on(/test_(.*)/, async (ctx) => {
+  console.log(ctx)
+})
+
 const layout = new Layout('menu', async (ctx: IContext): Promise<any> => {
   await ctx.msg.send('layout')
 })

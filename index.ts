@@ -15,7 +15,6 @@ import { SceneController } from './src/classes/SceneController'
 import axios from 'axios'
 import { Layout } from './src/classes/Layout'
 
-// TODO: RegExp actions, scenes state
 // TODO: Markup layouts
 // TODO: I18n
 // TODO: Delete handler
@@ -118,9 +117,18 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
         ]
       })
     } else if (update.callback_query) {
-      handlers = availableHandlers.filter((handler: IHandler): boolean => (
-        handler.type === 'event' && update.callback_query?.data === handler.event
-      ))
+      handlers = availableHandlers.filter((handler: IHandler): boolean => {
+        if (handler.event instanceof RegExp) {
+          const match: RegExpMatchArray | null | undefined =
+            update.callback_query?.data.match(handler.event)
+          if (!match) return false
+
+          ctx.matchParams = match
+          return true
+        } else {
+          return handler.type === 'event' && update.callback_query?.data === handler.event
+        }
+      })
     } else if (events.includes('message') && this.sceneController.getActiveScene(userId)) {
       const activeScene: string | null = this.sceneController.getActiveScene(userId)
 
@@ -154,8 +162,8 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
 
         if (!handlers || !handlers.length) {
           handlers = availableHandlers.filter((handler: IHandler): boolean => (
-            handler.type === 'event' && events.includes(handler.event) && !handler.text &&
-            !handler.listenEntities?.length
+            handler.type === 'event' && typeof handler.event === 'string' &&
+            events.includes(handler.event) && !handler.text && !handler.listenEntities?.length
           ))
         }
       }

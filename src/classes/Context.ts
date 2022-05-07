@@ -123,6 +123,7 @@ export class Context<T> implements IContext {
   params: string[] = []
   scene: ISceneContext
   layouts: Layout[] = []
+  matchParams: RegExpMatchArray
 
   constructor(update: IUpdate, sceneController: SceneController, layouts: Layout[]) {
     if (update.message) {

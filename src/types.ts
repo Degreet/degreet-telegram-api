@@ -23,6 +23,7 @@ export interface IContext {
   params: string[]
   scene: ISceneContext
   callLayout: (name: string) => boolean
+  matchParams: RegExpMatchArray
 }
 
 export interface ISceneContext {
@@ -63,7 +64,7 @@ export interface IMessageExtra {
 
 export interface IHandler {
   type: string
-  event?: string
+  event?: string | RegExp
   text?: string
   listenEntities?: string[]
   middlewares: middleware[]

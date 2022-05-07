@@ -10,7 +10,7 @@ block.command('start', async (ctx: IContext): Promise<any> => {
     await ctx.msg.send(
       `Hello! Subscribe to the <a href="${CHANNEL}">channel</a> for continue bot using!`,
       new Markup('inline')
-        .btn('cb', 'Check subscription', 'check').row()
+        .btn('cb', 'Check subscription', 'test_1').row()
     )
   } catch (e: any) {
     console.error(e)

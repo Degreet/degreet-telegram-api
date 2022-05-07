@@ -8,11 +8,11 @@ export class BlockBuilder {
     this.middlewares.push(...middlewares)
   }
 
-  public on(event: string, ...handlers: middleware[]): void {
-    const listenEntities: string[] = event.split(':')
+  public on(event: string | RegExp, ...handlers: middleware[]): void {
+    const listenEntities: string[] = typeof event === 'string' ? event.split(':') : []
 
     this.handlers.push({
-      event: listenEntities.shift(),
+      event: event instanceof RegExp ? event : listenEntities.shift(),
       type: 'event',
       listenEntities,
       middlewares: handlers,
