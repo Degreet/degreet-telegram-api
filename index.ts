@@ -4,6 +4,7 @@ import { TELEGRAM_BOT_API } from './src/constants'
 import { updateConnectionUri } from './src/classes/TelegramMethods'
 import { Context } from './src/classes/Context'
 import { Session } from './src/classes/Session'
+import { Layout } from './src/classes/Layout'
 
 import { BlockBuilder } from './src/classes/BlockBuilder'
 import { Block } from './src/classes/Block'
@@ -13,9 +14,6 @@ import { BlockScene } from './src/classes/BlockScene'
 import { SceneController } from './src/classes/SceneController'
 
 import axios from 'axios'
-import { Layout } from './src/classes/Layout'
-
-// TODO: Payments, work with photo, file system
 
 class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   token: string
@@ -93,6 +91,10 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
 
       if (update.message.new_chat_member) {
         events.push('new_chat_member')
+      } else if (update.message.dice) {
+        events.push('dice')
+      } else if (update.message.location) {
+        events.push('location')
       }
     } else if (update.chat_join_request) {
       events.push('join_request')

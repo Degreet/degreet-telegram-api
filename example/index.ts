@@ -55,17 +55,17 @@ bot.use(scene)
 bot.use(subscription)
 bot.use(bonus)
 
-bot.on('new_chat_member', async (ctx) => {
+bot.on('dice', async (ctx) => {
   console.log(ctx)
 })
 
 bot.on(/test_(.*)/, async (ctx) => {
-  await ctx.msg.send(
-    'Hello!',
-    new Markup('reply')
-      .btn('base', 'Hello!').row()
+  console.log(await ctx.msg.sendDice(
+    '🎲',
+    new Markup('inline')
+      .btn('callback', 'Hello!', 'hello').row()
       .setPlaceholder('Enter button down')
-  )
+  ))
 })
 
 const layout = new Layout('menu', async (ctx: IContext): Promise<any> => {

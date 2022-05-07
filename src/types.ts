@@ -12,11 +12,27 @@ export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requ
 export type keyboardType = 'inline' | 'reply' | 'remove'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
-export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | string
+export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | string
+export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 
 export interface IMarkupLayout {
   name: string,
   layout: IButton[][]
+}
+
+export interface IDiceContext {
+  emoji: diceEmojis
+  value: number
+}
+
+export interface ISendDiceExtra {
+  chat_id: number
+  emoji?: diceEmojis
+  disable_notification?: boolean
+  protect_content?: boolean
+  reply_to_message_id?: number
+  allow_sending_without_reply?: boolean
+  reply_markup?: keyboard
 }
 
 export interface IContext {
@@ -30,6 +46,11 @@ export interface IContext {
   scene: ISceneContext
   callLayout: (name: string) => boolean
   matchParams: RegExpMatchArray
+  callbackQuery?: ICallbackQuery
+  joinRequest?: IChatJoinRequest
+  newChatMember?: INewChatMember
+  dice?: IDiceContext
+  location?: ILocation
 }
 
 export interface ISceneContext {
@@ -102,6 +123,17 @@ export interface IMessage {
   text: string,
   entities?: IEntity[]
   new_chat_member?: INewChatMember
+  dice?: IDiceContext
+  location?: ILocation
+}
+
+export interface ILocation {
+  longitude: number
+  latitude: number
+  horizontal_accuracy?: number
+  live_period?: number
+  heading?: number
+  proximity_alert_radius?: number
 }
 
 export interface ICallbackQuery {

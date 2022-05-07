@@ -1,4 +1,5 @@
 import {
+  diceEmojis,
   IAnswerCallbackQueryExtra,
   IDeleteMessageTextExtra,
   IEditMarkupExtra,
@@ -6,7 +7,7 @@ import {
   IGetChatMemberExtra,
   IGetChatMemberResponse,
   IMessage,
-  IMessageExtra,
+  IMessageExtra, ISendDiceExtra,
 } from '../types'
 
 import { Markup } from './Markup'
@@ -42,6 +43,24 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<IMessage>('/sendMessage', initExtra)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  async sendDice(userId?: number, emoji?: diceEmojis, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
+    try {
+      if (!userId) return
+      const resultExtra: IMessageExtra = TelegramMethods.extraMarkup(extra)
+
+      const initExtra: ISendDiceExtra = {
+        chat_id: userId,
+        parse_mode: 'HTML',
+        emoji,
+        ...resultExtra,
+      }
+
+      return await TelegramMethods.fetch<IMessage>('/sendDice', initExtra)
     } catch (e: any) {
       throw e
     }

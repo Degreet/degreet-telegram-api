@@ -1,9 +1,10 @@
 import {
+  diceEmojis,
   ICallbackQuery,
   IChat,
   IChatJoinRequest,
-  IContext,
-  IGetChatMemberResponse,
+  IContext, IDiceContext,
+  IGetChatMemberResponse, ILocation,
   IMessage,
   IMessageExtra, INewChatMember, ISceneContext,
   IUpdate
@@ -37,6 +38,15 @@ export class Msg {
     try {
       if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().send(this.from.id, text, extra)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async sendDice(emoji?: diceEmojis, extra?: IMessageExtra | Markup): Promise<IMessage | void> {
+    try {
+      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().sendDice(this.from.id, emoji, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -128,6 +138,8 @@ export class Context<T> implements IContext {
   callbackQuery?: ICallbackQuery
   joinRequest?: IChatJoinRequest
   newChatMember?: INewChatMember
+  dice?: IDiceContext
+  location?: ILocation
 
   constructor(update: IUpdate, sceneController: SceneController, layouts: Layout[]) {
     if (update.message) {
@@ -146,6 +158,10 @@ export class Context<T> implements IContext {
 
       if (update.message.new_chat_member) {
         this.newChatMember = update.message.new_chat_member
+      } else if (update.message.dice) {
+        this.dice = update.message.dice
+      } else if (update.message.location) {
+        this.location = update.message.location
       }
     } else if (update.callback_query) {
       this.message = update.callback_query?.message
