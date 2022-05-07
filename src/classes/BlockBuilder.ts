@@ -9,9 +9,12 @@ export class BlockBuilder {
   }
 
   public on(event: string, ...handlers: middleware[]): void {
+    const listenEntities: string[] = event.split(':')
+
     this.handlers.push({
-      event,
+      event: listenEntities.shift(),
       type: 'event',
+      listenEntities,
       middlewares: handlers,
     })
   }

@@ -137,14 +137,24 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
         }
       }
     } else {
-      handlers = availableHandlers.filter((handler: IHandler): boolean => (
-        handler.type === 'event' && handler.event === 'text' && handler.text === update.message?.text
-      ))
-
-      if (!handlers || !handlers.length) {
+      if (entities && entities.length) {
         handlers = availableHandlers.filter((handler: IHandler): boolean => (
-          handler.type === 'event' && events.includes(handler.event) && !handler.text
+          handler.type === 'event' && handler.event === 'message' &&
+          !!handler.listenEntities?.find((entityType: string): boolean => (
+            !!entities.find((entity: IEntity): boolean => entity.type === entityType)
+          ))
         ))
+      } else {
+        handlers = availableHandlers.filter((handler: IHandler): boolean => (
+          handler.type === 'event' && handler.event === 'text' && handler.text === update.message?.text
+        ))
+
+        if (!handlers || !handlers.length) {
+          handlers = availableHandlers.filter((handler: IHandler): boolean => (
+            handler.type === 'event' && events.includes(handler.event) && !handler.text &&
+            !handler.listenEntities?.length
+          ))
+        }
       }
     }
 

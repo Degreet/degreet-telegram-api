@@ -64,6 +64,7 @@ export interface IHandler {
   type: string
   event?: string
   text?: string
+  listenEntities?: string[]
   middlewares: middleware[]
 }
 
@@ -104,7 +105,7 @@ export interface IUpdate {
 export interface IEntity {
   offset: number
   length: number
-  type: 'bot_command' | 'bold' | string
+  type: 'bot_command' | 'bold' | 'hashtag' | 'phone_number' | 'url' | string
 }
 
 export interface IWebAppButton {
