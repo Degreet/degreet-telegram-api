@@ -1,6 +1,7 @@
 import {
   ICallbackQuery,
   IChat,
+  IChatJoinRequest,
   IContext,
   IGetChatMemberResponse,
   IMessage,
@@ -114,16 +115,18 @@ export class Msg {
 
 export class Context<T> implements IContext {
   from?: IChat
-  message?: IMessage
   msg: Msg
   props: Partial<T> = {}
   session: any = {}
   api: TelegramMethods
-  callbackQuery: ICallbackQuery
   params: string[] = []
   scene: ISceneContext
   layouts: Layout[] = []
   matchParams: RegExpMatchArray
+
+  message?: IMessage
+  callbackQuery?: ICallbackQuery
+  joinRequest?: IChatJoinRequest
 
   constructor(update: IUpdate, sceneController: SceneController, layouts: Layout[]) {
     if (update.message) {
@@ -143,6 +146,9 @@ export class Context<T> implements IContext {
       this.message = update.callback_query?.message
       this.from = update.callback_query?.from
       this.callbackQuery = update.callback_query
+    } else if (update.chat_join_request) {
+      this.joinRequest = update.chat_join_request
+      this.from = update.chat_join_request.from
     }
 
     this.api = new TelegramMethods()

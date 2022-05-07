@@ -12,6 +12,7 @@ export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requ
 export type keyboardType = 'inline' | 'reply' | 'remove'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
+export type eventHint = 'join_request' | 'message' | 'text' | string
 
 export interface IMarkupLayout {
   name: string,
@@ -103,11 +104,29 @@ export interface ICallbackQuery {
   data: string
 }
 
+export interface IInviteLink {
+  invite_link: string
+  name: string
+  creator: IChat
+  pending_join_request_count: number
+  creates_join_request: boolean
+  is_primary: boolean
+  is_revoked: boolean
+}
+
+export interface IChatJoinRequest {
+  chat: IChat
+  from: IChat
+  date: number
+  invite_link: IInviteLink
+}
+
 export interface IUpdate {
   update_id: number,
   from?: IChat,
   message?: IMessage
   callback_query?: ICallbackQuery
+  chat_join_request?: IChatJoinRequest
 }
 
 export interface IEntity {

@@ -12,7 +12,7 @@ interface ISession {
 }
 
 const token: string = config.get<string>('botToken')
-const bot: DegreetTelegram<IContext> = new DegreetTelegram<IContext>(token)
+const bot: DegreetTelegram = new DegreetTelegram(token)
 
 new Markup('inline')
   .btn('cb', 'text', 'action').row()
@@ -54,6 +54,10 @@ bot.use(scene)
 
 bot.use(subscription)
 bot.use(bonus)
+
+bot.on('join_request', async (ctx) => {
+  console.log(ctx)
+})
 
 bot.on(/test_(.*)/, async (ctx) => {
   await ctx.msg.send(

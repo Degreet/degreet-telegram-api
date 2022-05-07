@@ -1,4 +1,4 @@
-import { IHandler, middleware } from '../types'
+import { eventHint, IHandler, middleware } from '../types'
 
 export class BlockBuilder {
   handlers: IHandler[] = []
@@ -8,7 +8,7 @@ export class BlockBuilder {
     this.middlewares.push(...middlewares)
   }
 
-  public on(event: string | RegExp, ...handlers: middleware[]): void {
+  public on(event: eventHint | RegExp, ...handlers: middleware[]): void {
     const listenEntities: string[] = typeof event === 'string' ? event.split(':') : []
 
     this.handlers.push({

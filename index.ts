@@ -1,4 +1,4 @@
-import { IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware, scene } from './src/types'
+import { eventHint, IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware, scene } from './src/types'
 import { TELEGRAM_BOT_API } from './src/constants'
 
 import { updateConnectionUri } from './src/classes/TelegramMethods'
@@ -15,9 +15,9 @@ import { SceneController } from './src/classes/SceneController'
 import axios from 'axios'
 import { Layout } from './src/classes/Layout'
 
-// TODO: Payments, on join request, work with photo, new chat member, file system
+// TODO: Payments, work with photo, new chat member, file system
 
-class DegreetTelegram<T extends IContext> extends BlockBuilder {
+class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   token: string
   connectionUri: string
   botInfo: IChat
@@ -82,7 +82,7 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
   }
 
   private async handleUpdate(update: IUpdate): Promise<void> {
-    const events: (string | void)[] = []
+    const events: (eventHint | void)[] = []
 
     if (update.message) {
       events.push('message')
@@ -90,6 +90,8 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
       if (update.message.text) {
         events.push('text')
       }
+    } else if (update.chat_join_request) {
+      events.push('join_request')
     }
 
     let handlers: IHandler[] = []
