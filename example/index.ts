@@ -4,6 +4,7 @@ import config from 'config'
 
 import subscription from './blocks/subcription.block'
 import bonus from './blocks/bonus.block'
+import { Layout } from '../src/classes/Layout'
 
 interface ISession {
   balance?: number
@@ -26,6 +27,7 @@ const scene = new StepScene(
     try {
       console.log(ctx)
       ctx.scene.leave()
+      ctx.callLayout('menu')
     } catch (e: any) {
       console.error(e)
     }
@@ -47,6 +49,12 @@ bot.use(scene)
 
 bot.use(subscription)
 bot.use(bonus)
+
+const layout = new Layout('menu', async (ctx: IContext): Promise<any> => {
+  await ctx.msg.send('layout')
+})
+
+bot.use(layout)
 
 bot.launch().then(() => {
   console.log(`started on @${bot.botInfo.username}`)

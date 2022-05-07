@@ -11,6 +11,7 @@ import {
 import { Markup } from './Markup'
 import { TelegramMethods } from './TelegramMethods'
 import { SceneController } from './SceneController'
+import { Layout } from './Layout'
 
 export class Msg {
   chat?: IChat
@@ -121,8 +122,9 @@ export class Context<T> implements IContext {
   callbackQuery: ICallbackQuery
   params: string[] = []
   scene: ISceneContext
+  layouts: Layout[] = []
 
-  constructor(update: IUpdate, sceneController: SceneController) {
+  constructor(update: IUpdate, sceneController: SceneController, layouts: Layout[]) {
     if (update.message) {
       this.message = update.message
       this.from = update.message?.from
@@ -145,6 +147,13 @@ export class Context<T> implements IContext {
     this.api = new TelegramMethods()
     this.msg = new Msg(this.from, this.message, update)
     this.scene = this.getSceneParams(sceneController)
+    this.layouts = layouts
+  }
+
+  public callLayout(name: string): boolean {
+    const layout = this.layouts.find((layout: Layout): boolean => layout.name === name)
+    if (layout) layout.handler(this, () => {})
+    return !!layout
   }
 
   private getSceneParams(sceneController: SceneController): ISceneContext {

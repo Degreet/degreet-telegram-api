@@ -22,6 +22,7 @@ export interface IContext {
   api: TelegramMethods
   params: string[]
   scene: ISceneContext
+  callLayout: (name: string) => boolean
 }
 
 export interface ISceneContext {

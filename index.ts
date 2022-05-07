@@ -13,9 +13,9 @@ import { BlockScene } from './src/classes/BlockScene'
 import { SceneController } from './src/classes/SceneController'
 
 import axios from 'axios'
+import { Layout } from './src/classes/Layout'
 
-// TODO: Listen entities
-// TODO: One-time-scene (e.g. menu)
+// TODO: RegExp actions, scenes state
 // TODO: Markup layouts
 // TODO: I18n
 // TODO: Delete handler
@@ -27,6 +27,7 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
   botInfo: IChat
   scenes: scene[] = []
   sceneController: SceneController = new SceneController(this.scenes)
+  layouts: Layout[] = []
 
   constructor(token: string) {
     super()
@@ -48,8 +49,8 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
     }
   }
 
-  public use(...middlewares: (middleware | Block | scene)[]): void {
-    middlewares.forEach((middleware: middleware | Block | scene): void => {
+  public use(...middlewares: (middleware | Block | scene | Layout)[]): void {
+    middlewares.forEach((middleware: middleware | Block | scene | Layout): void => {
       if (middleware instanceof Block) {
         const handlers: IHandler[] = middleware.handlers
 
@@ -60,6 +61,8 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
         this.handlers.push(...handlers)
       } else if (middleware instanceof BlockScene || middleware instanceof StepScene) {
         this.scenes.push(middleware)
+      } else if (middleware instanceof Layout) {
+        this.layouts.push(middleware)
       } else {
         this.middlewares.push(middleware)
       }
@@ -96,7 +99,7 @@ class DegreetTelegram<T extends IContext> extends BlockBuilder {
     let handlers: IHandler[] = []
     const entities: IEntity[] | void = update.message?.entities
 
-    const ctx: IContext = new Context<T>(update, this.sceneController)
+    const ctx: IContext = new Context<T>(update, this.sceneController, this.layouts)
     const userId: number | undefined = ctx.from?.id
     const availableHandlers: IHandler[] = this.getAvailableHandlers(userId)
 
