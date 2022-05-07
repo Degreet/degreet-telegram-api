@@ -18,7 +18,7 @@ import axios from 'axios'
 class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   token: string
   connectionUri: string
-  botInfo: IChat
+  info: IChat
   scenes: scene[] = []
   sceneController: SceneController = new SceneController(this.scenes)
   layouts: Layout[] = []
@@ -201,7 +201,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   }
 
   public async launch(): Promise<any> {
-    this.botInfo = await this.fetch<IChat>('/getMe')
+    this.info = await this.fetch<IChat>('/getMe')
     this.startPolling()
   }
 }
@@ -213,4 +213,5 @@ export {
   Block,
   BlockScene,
   StepScene,
+  Layout,
 }
