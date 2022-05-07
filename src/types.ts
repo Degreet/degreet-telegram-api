@@ -12,7 +12,7 @@ export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requ
 export type keyboardType = 'inline' | 'reply' | 'remove'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
-export type eventHint = 'join_request' | 'message' | 'text' | string
+export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | string
 
 export interface IMarkupLayout {
   name: string,
@@ -87,6 +87,13 @@ export interface IChat {
   supports_inline_queries: boolean
 }
 
+export interface INewChatMember {
+  id: number
+  is_bot: boolean
+  first_name: string
+  username: string
+}
+
 export interface IMessage {
   message_id: number,
   from?: IChat,
@@ -94,6 +101,7 @@ export interface IMessage {
   date: number,
   text: string,
   entities?: IEntity[]
+  new_chat_member?: INewChatMember
 }
 
 export interface ICallbackQuery {

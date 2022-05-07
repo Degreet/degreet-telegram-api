@@ -55,7 +55,7 @@ bot.use(scene)
 bot.use(subscription)
 bot.use(bonus)
 
-bot.on('join_request', async (ctx) => {
+bot.on('new_chat_member', async (ctx) => {
   console.log(ctx)
 })
 

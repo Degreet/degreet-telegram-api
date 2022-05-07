@@ -15,7 +15,7 @@ import { SceneController } from './src/classes/SceneController'
 import axios from 'axios'
 import { Layout } from './src/classes/Layout'
 
-// TODO: Payments, work with photo, new chat member, file system
+// TODO: Payments, work with photo, file system
 
 class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   token: string
@@ -89,6 +89,10 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
 
       if (update.message.text) {
         events.push('text')
+      }
+
+      if (update.message.new_chat_member) {
+        events.push('new_chat_member')
       }
     } else if (update.chat_join_request) {
       events.push('join_request')
@@ -187,7 +191,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
 
   private async startPolling(): Promise<void> {
     for await (const updates of this.updateGetter()) {
-      for (const update of updates) {
+      for (const update of await updates) {
         await this.handleUpdate(update)
         await this.fetch<any>(`/getUpdates?offset=${update.update_id + 1}`)
       }

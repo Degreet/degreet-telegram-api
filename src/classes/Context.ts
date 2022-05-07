@@ -5,7 +5,7 @@ import {
   IContext,
   IGetChatMemberResponse,
   IMessage,
-  IMessageExtra, ISceneContext,
+  IMessageExtra, INewChatMember, ISceneContext,
   IUpdate
 } from '../types'
 
@@ -127,6 +127,7 @@ export class Context<T> implements IContext {
   message?: IMessage
   callbackQuery?: ICallbackQuery
   joinRequest?: IChatJoinRequest
+  newChatMember?: INewChatMember
 
   constructor(update: IUpdate, sceneController: SceneController, layouts: Layout[]) {
     if (update.message) {
@@ -141,6 +142,10 @@ export class Context<T> implements IContext {
         this.params = update.message.text
           .slice(update.message.entities[0].length + 1)
           .split(' ')
+      }
+
+      if (update.message.new_chat_member) {
+        this.newChatMember = update.message.new_chat_member
       }
     } else if (update.callback_query) {
       this.message = update.callback_query?.message
