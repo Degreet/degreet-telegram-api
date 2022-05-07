@@ -11,6 +11,7 @@ block.command('start', async (ctx: IContext): Promise<any> => {
       `Hello! Subscribe to the <a href="${CHANNEL}">channel</a> for continue bot using!`,
       new Markup('inline')
         .btn('cb', 'Check subscription', 'test_1').row()
+        .useLayout('test')
     )
   } catch (e: any) {
     console.error(e)

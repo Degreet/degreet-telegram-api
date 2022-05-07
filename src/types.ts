@@ -13,6 +13,11 @@ export type keyboardType = 'inline' | 'reply' | 'remove'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
 
+export interface IMarkupLayout {
+  name: string,
+  layout: IButton[][]
+}
+
 export interface IContext {
   from?: IChat
   message?: IMessage

@@ -15,7 +15,6 @@ import { SceneController } from './src/classes/SceneController'
 import axios from 'axios'
 import { Layout } from './src/classes/Layout'
 
-// TODO: Markup layouts
 // TODO: I18n
 // TODO: Delete handler
 // TODO: Payments

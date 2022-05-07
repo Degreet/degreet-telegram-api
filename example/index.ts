@@ -5,6 +5,7 @@ import config from 'config'
 import subscription from './blocks/subcription.block'
 import bonus from './blocks/bonus.block'
 import { Layout } from '../src/classes/Layout'
+import { Markup } from '../src/classes/Markup'
 
 interface ISession {
   balance?: number
@@ -12,6 +13,10 @@ interface ISession {
 
 const token: string = config.get<string>('botToken')
 const bot: DegreetTelegram<IContext> = new DegreetTelegram<IContext>(token)
+
+new Markup('inline')
+  .btn('cb', 'text', 'action').row()
+  .saveLayout('test')
 
 const scene = new StepScene(
   'test',

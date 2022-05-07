@@ -1,4 +1,6 @@
-import { allowedTypes, IButton, IMessageExtra, keyboardType, parseModeTypes } from '../types'
+import { allowedTypes, IButton, IMarkupLayout, IMessageExtra, keyboardType, parseModeTypes } from '../types'
+
+const layouts: IMarkupLayout[] = []
 
 export class Markup {
   type: keyboardType
@@ -85,6 +87,27 @@ export class Markup {
 
   public replyTo(msgId?: number): Markup {
     this.extra.reply_to_message_id = msgId
+    return this
+  }
+
+  public saveLayout(name: string): Markup {
+    layouts.push({
+      name,
+      layout: this.rows,
+    })
+
+    return this
+  }
+
+  public useLayout(name: string): Markup {
+    const layout: IMarkupLayout | undefined = layouts.find((layout: IMarkupLayout): boolean => (
+      layout.name === name
+    ))
+
+    if (layout) {
+      this.rows.push(...layout.layout)
+    }
+
     return this
   }
 }
