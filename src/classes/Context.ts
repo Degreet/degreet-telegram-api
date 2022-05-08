@@ -3,18 +3,21 @@ import {
   diceEmojis,
   ICallbackQuery,
   IChat,
-  IChatJoinRequest,
+  IChatJoinRequest, IContact,
   IContext, IDiceContext,
   IGetChatMemberResponse, ILocation,
   IMessage,
-  IMessageExtra, INewChatMember, IPhotoInfo, ISceneContext, ISendPhotoExtra,
-  IUpdate
+  IMessageExtra, INewChatMember, IPhotoSize, IPhotoInfo, ISceneContext, ISendPhotoExtra,
+  IUpdate, IFile
 } from '../types'
 
 import { Markup } from './Markup'
 import { TelegramMethods } from './TelegramMethods'
 import { SceneController } from './SceneController'
 import { Layout } from './Layout'
+import { TELEGRAM_FILE } from '../constants'
+import axios, { AxiosResponse } from 'axios'
+import * as fs from 'fs'
 
 export class Msg {
   chat?: IChat
@@ -28,7 +31,7 @@ export class Msg {
   constructor(from?: IChat, message?: IMessage, update?: IUpdate) {
     this.from = from
     this.message = message
-    this.chat = message && message.chat
+    this.chat = message && message.chat || from
     this.message_id = message && message.message_id
     this.date = message && message.date
     this.text = message && message.text || ''
@@ -37,8 +40,8 @@ export class Msg {
 
   async send(text: string, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
     try {
-      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
-      return new TelegramMethods().send(this.from.id, text, extra)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().send(this.chat.id, text, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -46,8 +49,8 @@ export class Msg {
 
   async sendChatAction(action: chatActions): Promise<boolean | void> {
     try {
-      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
-      return new TelegramMethods().sendChatAction(this.from.id, action)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().sendChatAction(this.chat.id, action)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -55,8 +58,8 @@ export class Msg {
 
   async sendPhoto(photo: IPhotoInfo, extra: ISendPhotoExtra | Markup = {}): Promise<IMessage | void> {
     try {
-      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
-      return new TelegramMethods().sendPhoto(this.from.id, photo, extra)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().sendPhoto(this.chat.id, photo, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -64,8 +67,8 @@ export class Msg {
 
   async sendDice(emoji?: diceEmojis, extra?: IMessageExtra | Markup): Promise<IMessage | void> {
     try {
-      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
-      return new TelegramMethods().sendDice(this.from.id, emoji, extra)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().sendDice(this.chat.id, emoji, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -73,8 +76,9 @@ export class Msg {
 
   async toast(text: string): Promise<IMessage | void> {
     try {
-      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
-      return new TelegramMethods().toast(this.update?.callback_query?.id, text)
+      if (!this.update || !this.update.callback_query)
+        throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
+      return new TelegramMethods().toast(this.update.callback_query.id, text)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -82,7 +86,8 @@ export class Msg {
 
   async alert(text: string): Promise<IMessage | void> {
     try {
-      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!this.update || !this.update.callback_query)
+        throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
       return new TelegramMethods().alert(this.update?.callback_query?.id, text)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
@@ -91,10 +96,10 @@ export class Msg {
 
   async edit(text: string, extra?: IMessageExtra | Markup): Promise<IMessage | void> {
     try {
-      if (!this.from || !this.message_id)
+      if (!this.chat || !this.message_id)
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
 
-      return new TelegramMethods().edit(this.from.id, this.message_id, text, extra)
+      return new TelegramMethods().edit(this.chat.id, this.message_id, text, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -102,10 +107,10 @@ export class Msg {
 
   async editMarkup(extra?: IMessageExtra | Markup): Promise<IMessage | void> {
     try {
-      if (!this.from || !this.message_id)
+      if (!this.chat || !this.message_id)
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
 
-      return new TelegramMethods().editMarkup(this.from.id, this.message_id, extra)
+      return new TelegramMethods().editMarkup(this.chat.id, this.message_id, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -113,10 +118,10 @@ export class Msg {
 
   async del(): Promise<boolean> {
     try {
-      if (!this.from || !this.message_id)
+      if (!this.chat || !this.message_id)
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
 
-      return new TelegramMethods().del(this.from.id, this.message_id)
+      return new TelegramMethods().del(this.chat.id, this.message_id)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -124,8 +129,8 @@ export class Msg {
 
   async getChatMember(chatId: number | string): Promise<IGetChatMemberResponse | void> {
     try {
-      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
-      return new TelegramMethods().getChatMember(chatId, this.from.id)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().getChatMember(chatId, this.chat.id)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -136,6 +141,47 @@ export class Msg {
       const member = await this.getChatMember(chatId)
       if (!member) return false
       return ['creator', 'administrator', 'member'].includes(member.status)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async kickChatMember(): Promise<boolean> {
+    try {
+      if (!this.chat || !this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().kickChatMember(this.chat.id, this.from.id)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async downloadPhoto(path: string): Promise<boolean> {
+    try {
+      const photoParts: IPhotoSize[] | undefined = this.update?.message?.photo
+      if (!photoParts) return false
+
+      const photo: IPhotoSize | undefined = photoParts[photoParts.length - 1]
+      if (!photo) return false
+
+      const fileInfo: IFile | void = await new TelegramMethods().getFile(photo.file_id)
+      if (!fileInfo) return false
+
+      const connectionUri: string = new TelegramMethods().token
+      const fullPath: string = `${TELEGRAM_FILE}${connectionUri}/${fileInfo.file_path}`
+
+      try {
+        axios({
+          method: 'GET',
+          url: fullPath,
+          responseType: 'stream'
+        }).then((response: AxiosResponse): void => {
+          response.data.pipe(fs.createWriteStream(path))
+        })
+
+        return true
+      } catch {
+        return false
+      }
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -161,6 +207,9 @@ export class Context<T> implements IContext {
   newChatMember?: INewChatMember
   dice?: IDiceContext
   location?: ILocation
+  contact?: IContact
+  photoParts?: IPhotoSize[]
+  photo?: IPhotoSize
 
   constructor(update: IUpdate, sceneController: SceneController, layouts: Layout[]) {
     if (update.message) {
@@ -183,6 +232,11 @@ export class Context<T> implements IContext {
         this.dice = update.message.dice
       } else if (update.message.location) {
         this.location = update.message.location
+      } else if (update.message.contact) {
+        this.contact = update.message.contact
+      } else if (update.message.photo) {
+        this.photoParts = update.message.photo
+        this.photo = this.photoParts[this.photoParts.length - 1]
       }
     } else if (update.callback_query) {
       this.message = update.callback_query?.message

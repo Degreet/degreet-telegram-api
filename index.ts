@@ -1,7 +1,7 @@
 import { eventHint, IChat, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddleware, scene } from './src/types'
 import { TELEGRAM_BOT_API } from './src/constants'
 
-import { updateConnectionUri } from './src/classes/TelegramMethods'
+import { updateConnectionUri, updateToken } from './src/classes/TelegramMethods'
 import { Context } from './src/classes/Context'
 import { Session } from './src/classes/Session'
 import { Layout } from './src/classes/Layout'
@@ -28,7 +28,9 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
     super()
     this.token = token
     this.connectionUri = TELEGRAM_BOT_API + this.token
+
     updateConnectionUri(this.connectionUri)
+    updateToken(this.token)
   }
 
   private async fetch<T>(url: string): Promise<T> {
@@ -96,6 +98,10 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
         events.push('dice')
       } else if (update.message.location) {
         events.push('location')
+      } else if (update.message.contact) {
+        events.push('contact')
+      } else if (update.message.photo) {
+        events.push('photo')
       }
     } else if (update.chat_join_request) {
       events.push('join_request')

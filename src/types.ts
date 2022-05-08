@@ -12,7 +12,7 @@ export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requ
 export type keyboardType = 'inline' | 'reply' | 'remove'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
-export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | string
+export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | string
 export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 export type eventType = eventHint | RegExp
 export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_video' | 'record_voice' | 'upload_voice' | 'upload_document' | 'choose_sticker' | 'find_location' | 'record_video_note' | 'upload_video_note' | string
@@ -20,6 +20,13 @@ export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_v
 export interface ISendActionExtra {
   chat_id: number
   action: chatActions
+}
+
+export interface IKickChatMemberExtra {
+  chat_id: number | string
+  user_id: number
+  until_date?: number
+  revoke_messages?: boolean
 }
 
 export interface IMarkupLayout {
@@ -59,6 +66,16 @@ export interface IContext {
   newChatMember?: INewChatMember
   dice?: IDiceContext
   location?: ILocation
+  contact?: IContact
+  photoParts?: IPhotoSize[]
+  photo?: IPhotoSize
+}
+
+export interface IFile {
+  file_id: string
+  file_unique_id: string
+  file_size?: IPhotoSize
+  file_path?: string
 }
 
 export interface IPhotoInfo {
@@ -142,6 +159,22 @@ export interface INewChatMember {
   username: string
 }
 
+export interface IContact {
+  phone_number: number
+  first_name: string
+  last_name: string
+  user_id?: number
+  vcard?: string
+}
+
+export interface IPhotoSize {
+  file_id: string
+  file_unique_id: string
+  width: number
+  height: number
+  file_size?: number
+}
+
 export interface IMessage {
   message_id: number,
   from?: IChat,
@@ -152,6 +185,8 @@ export interface IMessage {
   new_chat_member?: INewChatMember
   dice?: IDiceContext
   location?: ILocation
+  contact?: IContact
+  photo?: IPhotoSize[]
 }
 
 export interface ILocation {

@@ -4,9 +4,9 @@ import {
   IAnswerCallbackQueryExtra,
   IDeleteMessageTextExtra,
   IEditMarkupExtra,
-  IEditMessageTextExtra,
+  IEditMessageTextExtra, IFile,
   IGetChatMemberExtra,
-  IGetChatMemberResponse,
+  IGetChatMemberResponse, IKickChatMemberExtra,
   IMessage,
   IMessageExtra,
   IPhotoInfo,
@@ -23,7 +23,14 @@ import * as fs from 'fs'
 let connectionUri = ''
 export const updateConnectionUri = (uri: string): string => connectionUri = uri
 
+let token = ''
+export const updateToken = (newToken: string): string => token = newToken
+
 export class TelegramMethods {
+  public get token(): string {
+    return token
+  }
+
   private static async fetch<T>(url: string, extra: any): Promise<T> {
     try {
       const { data } = await axios.get(connectionUri + url, { params: extra })
@@ -213,6 +220,30 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<IGetChatMemberResponse | void>('/getChatMember', data)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  async kickChatMember(chatId?: number | string, userId?: number, moreExtra?: IKickChatMemberExtra): Promise<boolean> {
+    try {
+      if (!chatId || !userId) return false
+
+      const data: IKickChatMemberExtra = {
+        chat_id: chatId,
+        user_id: userId,
+        ...moreExtra,
+      }
+
+      return await TelegramMethods.fetch<boolean>('/banChatMember', data)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  async getFile(fileId: string): Promise<IFile | void> {
+    try {
+      return await TelegramMethods.fetch<IFile | undefined>('/getFile', { file_id: fileId })
     } catch (e: any) {
       throw e
     }

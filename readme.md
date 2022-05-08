@@ -16,7 +16,7 @@ bot.command('start', async (ctx: IContext): Promise<void> => {
 })
 
 bot.launch().then(() => {
-  console.log(`Started on @${bot.botInfo.username}`)
+  console.log(`Started on @${bot.info.username}`)
 })
 ```
 
