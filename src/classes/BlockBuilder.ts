@@ -1,4 +1,4 @@
-import { eventHint, IHandler, middleware } from '../types'
+import { eventType, IHandler, middleware } from '../types'
 
 export class BlockBuilder {
   handlers: IHandler[] = []
@@ -8,31 +8,46 @@ export class BlockBuilder {
     this.middlewares.push(...middlewares)
   }
 
-  public on(event: eventHint | RegExp, ...handlers: middleware[]): void {
-    const listenEntities: string[] = typeof event === 'string' ? event.split(':') : []
+  public on(events: eventType[] | eventType, ...handlers: middleware[]): void {
+    const saveHandler = (event: eventType): void => {
+      const listenEntities: string[] = typeof event === 'string' ? event.split(':') : []
 
-    this.handlers.push({
-      event: event instanceof RegExp ? event : listenEntities.shift(),
-      type: 'event',
-      listenEntities,
-      middlewares: handlers,
-    })
+      this.handlers.push({
+        event: event instanceof RegExp ? event : listenEntities.shift(),
+        type: 'event',
+        listenEntities,
+        middlewares: handlers,
+      })
+    }
+
+    if (events instanceof Array) events.forEach(saveHandler)
+    else saveHandler(events)
   }
 
-  public listen(text: string, ...handlers: middleware[]): void {
-    this.handlers.push({
-      text,
-      type: 'event',
-      event: 'text',
-      middlewares: handlers,
-    })
+  public listen(texts: string[] | string, ...handlers: middleware[]): void {
+    const saveHandler = (text: string): void => {
+      this.handlers.push({
+        text,
+        type: 'event',
+        event: 'text',
+        middlewares: handlers,
+      })
+    }
+
+    if (texts instanceof Array) texts.forEach(saveHandler)
+    else saveHandler(texts)
   }
 
-  public command(text: string, ...handlers: middleware[]): void {
-    this.handlers.push({
-      text,
-      type: 'command',
-      middlewares: handlers,
-    })
+  public command(commands: string[] | string, ...handlers: middleware[]): void {
+    const saveHandler = (text: string): void => {
+      this.handlers.push({
+        text,
+        type: 'command',
+        middlewares: handlers,
+      })
+    }
+
+    if (commands instanceof Array) commands.forEach(saveHandler)
+    else saveHandler(commands)
   }
 }

@@ -4,13 +4,13 @@ import { IMessage } from '../../src/types'
 
 const block: Block = new Block()
 
-block.on(/drop_(.*)/, async (ctx: ICustomContext): Promise<any> => {
+block.on(['drop_dice', 'drop_darts'], async (ctx: ICustomContext): Promise<any> => {
   try {
     try {
       await ctx.msg.del()
     } catch {}
 
-    const diceElement: string | undefined = ctx.matchParams[1]
+    const diceElement: string | undefined = ctx.update?.callback_query?.data.split('_')[1]
     if (!diceElement) return
 
     const result: IMessage | void = await ctx.msg.sendDice(diceElement === 'darts' ? '🎯' : '🎲')

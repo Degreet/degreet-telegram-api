@@ -14,6 +14,7 @@ export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
 export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | string
 export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
+export type eventType = eventHint | RegExp
 
 export interface IMarkupLayout {
   name: string,
@@ -38,6 +39,7 @@ export interface ISendDiceExtra {
 export interface IContext {
   from?: IChat
   message?: IMessage
+  update?: IUpdate
   msg: Msg
   props: any
   session: any

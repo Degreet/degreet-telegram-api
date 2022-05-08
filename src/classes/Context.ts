@@ -134,7 +134,9 @@ export class Context<T> implements IContext {
   layouts: Layout[] = []
   matchParams: RegExpMatchArray
 
+  update: IUpdate
   message?: IMessage
+
   callbackQuery?: ICallbackQuery
   joinRequest?: IChatJoinRequest
   newChatMember?: INewChatMember
@@ -172,6 +174,7 @@ export class Context<T> implements IContext {
       this.from = update.chat_join_request.from
     }
 
+    this.update = update
     this.api = new TelegramMethods()
     this.msg = new Msg(this.from, this.message, update)
     this.scene = this.getSceneParams(sceneController)
