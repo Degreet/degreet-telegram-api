@@ -1,6 +1,6 @@
 {
   "name": "degreet-telegram",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "main": "build/index.js",
   "types": "index.ts",
   "description": "The library for using Telegram Bot API for development on TypeScript",
@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
-    "config": "^3.3.7"
+    "config": "^3.3.7",
+    "form-data": "^4.0.0"
   },
   "repository": {
     "type": "git",

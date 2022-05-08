@@ -6,7 +6,7 @@ import {
   IContext, IDiceContext,
   IGetChatMemberResponse, ILocation,
   IMessage,
-  IMessageExtra, INewChatMember, ISceneContext,
+  IMessageExtra, INewChatMember, IPhotoInfo, ISceneContext, ISendPhotoExtra,
   IUpdate
 } from '../types'
 
@@ -38,6 +38,15 @@ export class Msg {
     try {
       if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().send(this.from.id, text, extra)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async sendPhoto(photo: IPhotoInfo, extra: ISendPhotoExtra | Markup = {}): Promise<IMessage | void> {
+    try {
+      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().sendPhoto(this.from.id, photo, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }

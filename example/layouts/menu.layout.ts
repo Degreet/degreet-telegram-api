@@ -1,5 +1,6 @@
 import { Layout, Markup } from '../../index'
 import { ICustomContext } from '../types'
+import * as path from 'path'
 
 const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<any> => {
   try {
@@ -22,7 +23,10 @@ const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<a
     try {
       await ctx.msg.edit(text, markup)
     } catch {
-      await ctx.msg.send(text, markup)
+      await ctx.msg.sendPhoto(
+        { photoPath: path.resolve(__dirname, 'mountain.jpg') },
+        markup.setCaption(text)
+      )
     }
   } catch (e: any) {
     console.error(e)

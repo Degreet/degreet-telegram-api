@@ -55,6 +55,11 @@ export interface IContext {
   location?: ILocation
 }
 
+export interface IPhotoInfo {
+  url?: string
+  photoPath?: string
+}
+
 export interface ISceneContext {
   enter: (name: string) => void
   leave: () => void
@@ -80,6 +85,19 @@ export interface IRemoveKeyboard {
   remove_keyboard: boolean
 }
 
+export interface ISendPhotoExtra {
+  chat_id?: number
+  photo?: string
+  caption?: string
+  parse_mode?: parseModeTypes
+  caption_entities?: IEntity[]
+  disable_notification?: boolean
+  protect_content?: boolean
+  reply_to_message_id?: number
+  allow_sending_without_reply?: boolean
+  reply_markup?: keyboard
+}
+
 export interface IMessageExtra {
   chat_id?: number
   text?: string
@@ -90,6 +108,7 @@ export interface IMessageExtra {
   reply_to_message_id?: number
   allow_sending_without_reply?: boolean
   reply_markup?: keyboard
+  caption?: string
 }
 
 export interface IHandler {

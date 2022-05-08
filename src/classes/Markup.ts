@@ -99,6 +99,11 @@ export class Markup {
     return this
   }
 
+  public setCaption(caption: string): Markup {
+    this.extra.caption = caption
+    return this
+  }
+
   public saveLayout(name: string): Markup {
     layouts.push({
       name,

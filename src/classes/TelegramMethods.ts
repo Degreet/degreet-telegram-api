@@ -7,11 +7,13 @@ import {
   IGetChatMemberExtra,
   IGetChatMemberResponse,
   IMessage,
-  IMessageExtra, ISendDiceExtra,
+  IMessageExtra, IPhotoInfo, ISendDiceExtra, ISendPhotoExtra,
 } from '../types'
 
+import FormData from 'form-data'
 import { Markup } from './Markup'
 import axios from 'axios'
+import * as fs from 'fs'
 
 let connectionUri = ''
 export const updateConnectionUri = (uri: string): string => connectionUri = uri
@@ -43,6 +45,48 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<IMessage>('/sendMessage', initExtra)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  async sendPhoto(userId?: number, photo?: IPhotoInfo, extra: ISendPhotoExtra | Markup = {}): Promise<IMessage | void> {
+    try {
+      if (!userId || !photo) return
+      const resultExtra: ISendPhotoExtra = TelegramMethods.extraMarkup(extra)
+
+      if (photo.url) {
+        const initExtra: ISendPhotoExtra = {
+          chat_id: userId,
+          parse_mode: 'HTML',
+          photo: photo.url,
+          ...resultExtra,
+        }
+
+        return await TelegramMethods.fetch<IMessage>('/sendPhoto', initExtra)
+      } else if (photo.photoPath) {
+        const formData = new FormData()
+        formData.append('chat_id', userId)
+        formData.append('parse_mode', 'HTML')
+        formData.append('photo', fs.createReadStream(photo.photoPath))
+
+        Object.keys(resultExtra).forEach((key: string): void => {
+          const data = resultExtra[key as keyof typeof resultExtra]
+          formData.append(key, typeof data === 'object' ? JSON.stringify(data) : data)
+        })
+
+        try {
+          const { data } = await axios.post(
+            connectionUri + '/sendPhoto',
+            formData,
+            { headers: formData.getHeaders() }
+          )
+
+          return data.result
+        } catch (e: any) {
+          throw new Error(e.response ? `TelegramError: ${e.response.data.description}` : e)
+        }
+      }
     } catch (e: any) {
       throw e
     }
