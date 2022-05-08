@@ -1,4 +1,5 @@
 import {
+  chatActions,
   diceEmojis,
   ICallbackQuery,
   IChat,
@@ -38,6 +39,15 @@ export class Msg {
     try {
       if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().send(this.from.id, text, extra)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async sendChatAction(action: chatActions): Promise<boolean | void> {
+    try {
+      if (!this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      return new TelegramMethods().sendChatAction(this.from.id, action)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }

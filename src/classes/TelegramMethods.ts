@@ -1,4 +1,5 @@
 import {
+  chatActions,
   diceEmojis,
   IAnswerCallbackQueryExtra,
   IDeleteMessageTextExtra,
@@ -7,7 +8,11 @@ import {
   IGetChatMemberExtra,
   IGetChatMemberResponse,
   IMessage,
-  IMessageExtra, IPhotoInfo, ISendDiceExtra, ISendPhotoExtra,
+  IMessageExtra,
+  IPhotoInfo,
+  ISendActionExtra,
+  ISendDiceExtra,
+  ISendPhotoExtra,
 } from '../types'
 
 import FormData from 'form-data'
@@ -105,6 +110,21 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<IMessage>('/sendDice', initExtra)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  async sendChatAction(chatId?: number, action?: chatActions): Promise<boolean | void> {
+    try {
+      if (!chatId || !action) return
+
+      const initExtra: ISendActionExtra = {
+        chat_id: chatId,
+        action,
+      }
+
+      return await TelegramMethods.fetch<boolean>('/sendChatAction', initExtra)
     } catch (e: any) {
       throw e
     }

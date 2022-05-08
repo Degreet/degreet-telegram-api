@@ -15,6 +15,12 @@ export type scene = BlockScene | StepScene
 export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | string
 export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 export type eventType = eventHint | RegExp
+export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_video' | 'record_voice' | 'upload_voice' | 'upload_document' | 'choose_sticker' | 'find_location' | 'record_video_note' | 'upload_video_note' | string
+
+export interface ISendActionExtra {
+  chat_id: number
+  action: chatActions
+}
 
 export interface IMarkupLayout {
   name: string,
