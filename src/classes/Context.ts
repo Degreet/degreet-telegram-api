@@ -11,7 +11,7 @@ import {
   IUpdate, IFile
 } from '../types'
 
-import { Markup } from './Markup'
+import { Keyboard } from './Keyboard'
 import { TelegramMethods } from './TelegramMethods'
 import { SceneController } from './SceneController'
 import { Layout } from './Layout'
@@ -38,7 +38,7 @@ export class Msg {
     this.update = update
   }
 
-  async send(text: string, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
+  async send(text: string, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().send(this.chat.id, text, extra)
@@ -56,7 +56,7 @@ export class Msg {
     }
   }
 
-  async sendPhoto(photo: IPhotoInfo, extra: ISendPhotoExtra | Markup = {}): Promise<IMessage | void> {
+  async sendPhoto(photo: IPhotoInfo, extra: ISendPhotoExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().sendPhoto(this.chat.id, photo, extra)
@@ -65,7 +65,7 @@ export class Msg {
     }
   }
 
-  async sendDice(emoji?: diceEmojis, extra?: IMessageExtra | Markup): Promise<IMessage | void> {
+  async sendDice(emoji?: diceEmojis, extra?: IMessageExtra | Keyboard): Promise<IMessage | void> {
     try {
       if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().sendDice(this.chat.id, emoji, extra)
@@ -94,7 +94,7 @@ export class Msg {
     }
   }
 
-  async edit(text: string, extra?: IMessageExtra | Markup): Promise<IMessage | void> {
+  async edit(text: string, extra?: IMessageExtra | Keyboard): Promise<IMessage | void> {
     try {
       if (!this.chat || !this.message_id)
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
@@ -105,7 +105,7 @@ export class Msg {
     }
   }
 
-  async editMarkup(extra?: IMessageExtra | Markup): Promise<IMessage | void> {
+  async editMarkup(extra?: IMessageExtra | Keyboard): Promise<IMessage | void> {
     try {
       if (!this.chat || !this.message_id)
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
@@ -245,6 +245,9 @@ export class Context<T> implements IContext {
     } else if (update.chat_join_request) {
       this.joinRequest = update.chat_join_request
       this.from = update.chat_join_request.from
+    } else if (update.edited_message) {
+      this.message = update.edited_message
+      this.from = update.edited_message?.from
     }
 
     this.update = update

@@ -9,10 +9,10 @@ export type sessionItem<T> = [number, T]
 export type sceneInfoItem = [number, IScene]
 export type keyboard = IInlineKeyboard | IReplyKeyboard | IRemoveKeyboard
 export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requestLocation' | 'webApp' | 'url' | 'switchInlineQuery'
-export type keyboardType = 'inline' | 'reply' | 'remove'
+export type keyboardType = 'under_the_message' | 'under_the_chat' | 'remove_under_the_chat'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
-export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | string
+export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | 'edit' | string
 export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 export type eventType = eventHint | RegExp
 export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_video' | 'record_voice' | 'upload_voice' | 'upload_document' | 'choose_sticker' | 'find_location' | 'record_video_note' | 'upload_video_note' | string
@@ -229,12 +229,13 @@ export interface IUpdate {
   message?: IMessage
   callback_query?: ICallbackQuery
   chat_join_request?: IChatJoinRequest
+  edited_message?: IMessage
 }
 
 export interface IEntity {
   offset: number
   length: number
-  type: 'bot_command' | 'bold' | 'hashtag' | 'phone_number' | 'url' | string
+  type: 'bot_command' | 'bold' | 'hashtag' | 'phone_number' | 'url' | 'email' | 'italic' | 'underline' | 'strikethrough' | 'spoiler' | 'code' | 'pre' | 'text_link' | 'text_mention' | string
 }
 
 export interface IWebAppButton {

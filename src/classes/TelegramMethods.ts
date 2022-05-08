@@ -16,7 +16,7 @@ import {
 } from '../types'
 
 import FormData from 'form-data'
-import { Markup } from './Markup'
+import { Keyboard } from './Keyboard'
 import axios from 'axios'
 import * as fs from 'fs'
 
@@ -40,11 +40,11 @@ export class TelegramMethods {
     }
   }
 
-  private static extraMarkup(markup: Markup | IMessageExtra): IMessageExtra | any {
-    return markup instanceof Markup ? markup.solveExtra() : markup
+  private static extraMarkup(markup: Keyboard | IMessageExtra): IMessageExtra | any {
+    return markup instanceof Keyboard ? markup.solveExtra() : markup
   }
 
-  async send(userId?: number, text?: string, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
+  async send(userId?: number, text?: string, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!userId || !text) return
       const resultExtra: IMessageExtra = TelegramMethods.extraMarkup(extra)
@@ -62,7 +62,7 @@ export class TelegramMethods {
     }
   }
 
-  async sendPhoto(userId?: number, photo?: IPhotoInfo, extra: ISendPhotoExtra | Markup = {}): Promise<IMessage | void> {
+  async sendPhoto(userId?: number, photo?: IPhotoInfo, extra: ISendPhotoExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!userId || !photo) return
       const resultExtra: ISendPhotoExtra = TelegramMethods.extraMarkup(extra)
@@ -104,7 +104,7 @@ export class TelegramMethods {
     }
   }
 
-  async sendDice(userId?: number, emoji?: diceEmojis, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
+  async sendDice(userId?: number, emoji?: diceEmojis, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!userId) return
       const resultExtra: IMessageExtra = TelegramMethods.extraMarkup(extra)
@@ -161,7 +161,7 @@ export class TelegramMethods {
     }
   }
 
-  async edit(userId?: number, msgId?: number, text?: string, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
+  async edit(userId?: number, msgId?: number, text?: string, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!userId || !msgId || !text) return
       const resultExtra: IMessageExtra = TelegramMethods.extraMarkup(extra)
@@ -195,7 +195,7 @@ export class TelegramMethods {
     }
   }
 
-  async editMarkup(userId?: number, msgId?: number, extra: IMessageExtra | Markup = {}): Promise<IMessage | void> {
+  async editMarkup(userId?: number, msgId?: number, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!userId || !msgId) return
       const resultExtra: IMessageExtra = TelegramMethods.extraMarkup(extra)

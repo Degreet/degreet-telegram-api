@@ -1,4 +1,4 @@
-import { Layout, Markup } from '../../index'
+import { Layout, Keyboard } from '../../index'
 import { ICustomContext } from '../types'
 import * as path from 'path'
 
@@ -16,7 +16,7 @@ const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<a
 🎲 +${ctx.session.dice.wins} : -${ctx.session.dice.fails}
 🎯 ${ctx.session.darts.score}`
 
-    const markup: Markup = new Markup('inline')
+    const markup: Keyboard = new Keyboard('under_the_message')
       .btn('callback', '🎲 Drop Dice!', 'drop_dice')
       .btn('callback', '🎯 Darts!', 'drop_darts').row()
 

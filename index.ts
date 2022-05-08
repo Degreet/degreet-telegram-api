@@ -5,7 +5,7 @@ import { updateConnectionUri, updateToken } from './src/classes/TelegramMethods'
 import { Context } from './src/classes/Context'
 import { Session } from './src/classes/Session'
 import { Layout } from './src/classes/Layout'
-import { Markup } from './src/classes/Markup'
+import { Keyboard } from './src/classes/Keyboard'
 
 import { BlockBuilder } from './src/classes/BlockBuilder'
 import { Block } from './src/classes/Block'
@@ -105,6 +105,8 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
       }
     } else if (update.chat_join_request) {
       events.push('join_request')
+    } else if (update.edited_message) {
+      events.push('edit')
     }
 
     let handlers: IHandler[] = []
@@ -207,7 +209,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
     }
   }
 
-  public async launch(): Promise<any> {
+  public async start(): Promise<any> {
     this.info = await this.fetch<IChat>('/getMe')
     this.startPolling()
   }
@@ -221,5 +223,5 @@ export {
   BlockScene,
   StepScene,
   Layout,
-  Markup,
+  Keyboard,
 }

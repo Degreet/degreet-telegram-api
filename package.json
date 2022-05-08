@@ -1,12 +1,14 @@
 {
   "name": "degreet-telegram",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "main": "build/index.js",
   "types": "index.ts",
   "description": "The library for using Telegram Bot API for development on TypeScript",
   "author": "Degreet <degreetpro@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "prepare": "npm run --silent build",
+    "build": "tsc --build",
     "dev": "nodemon example/index.ts"
   },
   "devDependencies": {

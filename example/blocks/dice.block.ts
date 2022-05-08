@@ -1,4 +1,4 @@
-import { Block, Markup } from '../../index'
+import { Block, Keyboard } from '../../index'
 import { ICustomContext } from '../types'
 import { IMessage } from '../../src/types'
 
@@ -32,7 +32,7 @@ block.on(['drop_dice', 'drop_darts'], async (ctx: ICustomContext): Promise<any> 
         result.dice.value >= 3 ? 'Bravo!' : 'You can do it better!'
     }
 
-    await ctx.msg.send(text, new Markup('inline').useLayout('go_menu_btn'))
+    await ctx.msg.send(text, new Keyboard('under_the_message').useLayout('go_menu_btn'))
   } catch (e: any) {
     console.error(e)
   }

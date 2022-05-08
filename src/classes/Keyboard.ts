@@ -10,7 +10,7 @@ import {
 
 const layouts: IMarkupLayout[] = []
 
-export class Markup {
+export class Keyboard {
   type: keyboardType
   removeKeyboard: boolean = false
   unresolvedBtns: IButton[] = []
@@ -22,7 +22,7 @@ export class Markup {
     this.type = type
   }
 
-  public btn(type: allowedTypes, text: string, action?: string, hidden?: boolean): Markup {
+  public btn(type: allowedTypes, text: string, action?: string, hidden?: boolean): Keyboard {
     let button: IButton
 
     switch (type) {
@@ -53,7 +53,7 @@ export class Markup {
     return this
   }
 
-  public row(btnsPerLine?: number, hidden?: boolean): Markup {
+  public row(btnsPerLine?: number, hidden?: boolean): Keyboard {
     if (hidden) return this
     const btns: IButton[] = [...this.unresolvedBtns]
     this.unresolvedBtns = []
@@ -79,32 +79,32 @@ export class Markup {
     return this
   }
 
-  public remove(): Markup {
+  public remove(): Keyboard {
     this.removeKeyboard = true
     return this
   }
 
-  public disableWebPagePreview(): Markup {
+  public disableWebPagePreview(): Keyboard {
     this.extra.disable_web_page_preview = true
     return this
   }
 
-  public setParseMode(parseMode: parseModeTypes): Markup {
+  public setParseMode(parseMode: parseModeTypes): Keyboard {
     this.extra.parse_mode = parseMode
     return this
   }
 
-  public replyTo(msgId?: number): Markup {
+  public replyTo(msgId?: number): Keyboard {
     this.extra.reply_to_message_id = msgId
     return this
   }
 
-  public setCaption(caption: string): Markup {
+  public setCaption(caption: string): Keyboard {
     this.extra.caption = caption
     return this
   }
 
-  public saveLayout(name: string): Markup {
+  public saveLayout(name: string): Keyboard {
     layouts.push({
       name,
       layout: this.rows,
@@ -113,7 +113,7 @@ export class Markup {
     return this
   }
 
-  public useLayout(name: string): Markup {
+  public useLayout(name: string): Keyboard {
     const layout: IMarkupLayout | undefined = layouts.find((layout: IMarkupLayout): boolean => (
       layout.name === name
     ))
@@ -125,7 +125,7 @@ export class Markup {
     return this
   }
 
-  public setPlaceholder(placeholder: string): Markup {
+  public setPlaceholder(placeholder: string): Keyboard {
     this.placeholder = placeholder
     return this
   }
@@ -133,10 +133,10 @@ export class Markup {
   public solveExtra(): IMessageExtra {
     let replyMarkup
 
-    if (this.type === 'inline') {
+    if (this.type === 'under_the_message') {
       const keyboard: IInlineKeyboard = { inline_keyboard: this.rows }
       replyMarkup = { reply_markup: keyboard }
-    } else if (this.type === 'reply') {
+    } else if (this.type === 'under_the_chat') {
       const keyboard: IReplyKeyboard = {
         keyboard: this.rows,
         resize_keyboard: true,
@@ -144,7 +144,7 @@ export class Markup {
       }
 
       replyMarkup = { reply_markup: keyboard }
-    } else if (this.type === 'remove') {
+    } else if (this.type === 'remove_under_the_chat') {
       const keyboard: IRemoveKeyboard = { remove_keyboard: true }
       replyMarkup = { reply_markup: keyboard }
     } else {
