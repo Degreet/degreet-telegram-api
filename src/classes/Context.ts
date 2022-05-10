@@ -105,12 +105,12 @@ export class Msg {
     }
   }
 
-  async editMarkup(extra?: IMessageExtra | Keyboard): Promise<IMessage | void> {
+  async editKeyboard(extra?: IMessageExtra | Keyboard): Promise<IMessage | void> {
     try {
       if (!this.chat || !this.message_id)
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
 
-      return new TelegramMethods().editMarkup(this.chat.id, this.message_id, extra)
+      return new TelegramMethods().editKeyboard(this.chat.id, this.message_id, extra)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }

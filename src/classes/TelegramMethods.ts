@@ -195,7 +195,7 @@ export class TelegramMethods {
     }
   }
 
-  async editMarkup(userId?: number, msgId?: number, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
+  async editKeyboard(userId?: number, msgId?: number, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!userId || !msgId) return
       const resultExtra: IMessageExtra = TelegramMethods.extraMarkup(extra)

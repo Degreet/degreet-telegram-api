@@ -17,7 +17,7 @@ bot.use(new Session<ISession>().middleware())
 bot.use(menuLayout)
 bot.use(diceBlock)
 
-bot.on('menu', (ctx: ICustomContext): any => ctx.callLayout('menu'))
+bot.onClick('menu', (ctx: ICustomContext): any => ctx.callLayout('menu'))
 bot.command('start', (ctx: ICustomContext): any => ctx.callLayout('menu'))
 
 bot.start().then((): void => {

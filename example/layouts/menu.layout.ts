@@ -16,16 +16,16 @@ const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<a
 🎲 +${ctx.session.dice.wins} : -${ctx.session.dice.fails}
 🎯 ${ctx.session.darts.score}`
 
-    const markup: Keyboard = new Keyboard('under_the_message')
+    const keyboard: Keyboard = new Keyboard('under_the_message')
       .btn('callback', '🎲 Drop Dice!', 'drop_dice')
       .btn('callback', '🎯 Darts!', 'drop_darts').row()
 
     try {
-      await ctx.msg.edit(text, markup)
+      await ctx.msg.edit(text, keyboard)
     } catch {
       await ctx.msg.sendPhoto(
         { photoPath: path.resolve(__dirname, 'mountain.jpg') },
-        markup.setCaption(text)
+        keyboard.setCaption(text)
       )
     }
   } catch (e: any) {

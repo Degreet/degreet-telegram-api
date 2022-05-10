@@ -24,6 +24,19 @@ export class BlockBuilder {
     else saveHandler(events)
   }
 
+  public onClick(actions: string[] | string, ...handlers: middleware[]): void {
+    const saveHandler = (action: string): void => {
+      this.handlers.push({
+        event: action,
+        type: 'button_click',
+        middlewares: handlers,
+      })
+    }
+
+    if (actions instanceof Array) actions.forEach(saveHandler)
+    else saveHandler(actions)
+  }
+
   public listen(texts: string[] | string, ...handlers: middleware[]): void {
     const saveHandler = (text: string): void => {
       this.handlers.push({

@@ -4,7 +4,7 @@ import { IMessage } from '../../src/types'
 
 const block: Block = new Block()
 
-block.on(['drop_dice', 'drop_darts'], async (ctx: ICustomContext): Promise<any> => {
+block.onClick(['drop_dice', 'drop_darts'], async (ctx: ICustomContext): Promise<any> => {
   try {
     try {
       await ctx.msg.del()

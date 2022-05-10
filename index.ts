@@ -132,7 +132,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
       })
     } else if (update.callback_query) {
       handlers = availableHandlers.filter((handler: IHandler): boolean => {
-        if (handler.event instanceof RegExp) {
+        if (handler.type === 'button_click' && handler.event instanceof RegExp) {
           const match: RegExpMatchArray | null | undefined =
             update.callback_query?.data.match(handler.event)
           if (!match) return false
@@ -140,7 +140,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
           ctx.matchParams = match
           return true
         } else {
-          return handler.type === 'event' && update.callback_query?.data === handler.event
+          return handler.type === 'button_click' && update.callback_query?.data === handler.event
         }
       })
     } else if (events.includes('message') && this.sceneController.getActiveScene(userId)) {
