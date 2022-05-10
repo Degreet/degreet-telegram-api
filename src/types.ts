@@ -49,13 +49,18 @@ export interface ISendDiceExtra {
   reply_markup?: keyboard
 }
 
-export interface IContext {
+export interface I18n {
+  setLocale: (localeName: string) => void
+  get: (key: string, data?: any) => string | undefined
+}
+
+export interface IContext<T = any> {
   from?: IChat
   message?: IMessage
   update?: IUpdate
   msg: Msg
   props: any
-  session: any
+  session: T
   api: TelegramMethods
   params: string[]
   scene: ISceneContext
@@ -69,6 +74,13 @@ export interface IContext {
   contact?: IContact
   photoParts?: IPhotoSize[]
   photo?: IPhotoSize
+  i18n?: I18n
+}
+
+export interface I18nSession {
+  i18n?: {
+    locale: string
+  }
 }
 
 export interface IFile {

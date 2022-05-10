@@ -1,0 +1,10 @@
+menu: |
+  🎲 +${diceWins} : -${diceFails}
+  🎯 ${dartsScore}
+drop_dice_btn: 🎲 Drop Dice!
+drop_darts_btn: 🎯 Darts!
+one_level_message: You're the best!
+two_level_message: Bravo!
+three_level_message: You can do it better!
+you_won_msg: You won!
+you_failed_msg: You have failed!

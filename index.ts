@@ -2,10 +2,11 @@ import { eventHint, IChat, IContext, IEntity, IHandler, IUpdate, middleware, nex
 import { TELEGRAM_BOT_API } from './src/constants'
 
 import { updateConnectionUri, updateToken } from './src/classes/TelegramMethods'
+import { Keyboard } from './src/classes/Keyboard'
 import { Context } from './src/classes/Context'
 import { Session } from './src/classes/Session'
 import { Layout } from './src/classes/Layout'
-import { Keyboard } from './src/classes/Keyboard'
+import { I18n } from './src/classes/I18n'
 
 import { BlockBuilder } from './src/classes/BlockBuilder'
 import { Block } from './src/classes/Block'
@@ -224,4 +225,5 @@ export {
   StepScene,
   Layout,
   Keyboard,
+  I18n,
 }

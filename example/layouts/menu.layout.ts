@@ -12,13 +12,16 @@ const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<a
       ctx.session.darts = { score: 0 }
     }
 
-    const text: string = `
-🎲 +${ctx.session.dice.wins} : -${ctx.session.dice.fails}
-🎯 ${ctx.session.darts.score}`
+    const text: string | undefined = ctx.i18n?.get('menu', {
+      diceWins: ctx.session.dice.wins,
+      diceFails: ctx.session.dice.fails,
+      dartsScore: ctx.session.darts.score,
+    })
 
     const keyboard: Keyboard = new Keyboard('under_the_message')
-      .btn('callback', '🎲 Drop Dice!', 'drop_dice')
-      .btn('callback', '🎯 Darts!', 'drop_darts').row()
+      .btn('callback', ctx.i18n?.get('drop_dice_btn')!, 'drop_dice')
+      .btn('callback', ctx.i18n?.get('drop_darts_btn')!, 'drop_darts')
+      .row()
 
     try {
       await ctx.msg.edit(text, keyboard)

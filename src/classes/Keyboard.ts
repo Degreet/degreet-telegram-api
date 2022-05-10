@@ -99,7 +99,7 @@ export class Keyboard {
     return this
   }
 
-  public setCaption(caption: string): Keyboard {
+  public setCaption(caption?: string): Keyboard {
     this.extra.caption = caption
     return this
   }

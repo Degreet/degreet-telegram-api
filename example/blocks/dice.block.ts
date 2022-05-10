@@ -16,20 +16,20 @@ block.onClick(['drop_dice', 'drop_darts'], async (ctx: ICustomContext): Promise<
     const result: IMessage | void = await ctx.msg.sendDice(diceElement === 'darts' ? '🎯' : '🎲')
     if (!result || !result.dice) return
 
-    let text: string
+    let text: string | undefined
 
     if (diceElement === 'dice') {
       if (result.dice.value > 3) {
-        text = 'You won!'
+        text = ctx.i18n?.get('you_won_msg')
         if (ctx.session.dice) ctx.session.dice.wins++
       } else {
-        text = 'You have failed!'
+        text = ctx.i18n?.get('you_failed_msg')
         if (ctx.session.dice) ctx.session.dice.fails++
       }
     } else {
       if (ctx.session.darts) ctx.session.darts.score += result.dice.value
-      text = result.dice.value === 6 ? 'You\'re the best!' :
-        result.dice.value >= 3 ? 'Bravo!' : 'You can do it better!'
+      text = ctx.i18n?.get(result.dice.value === 6 ? 'one_level_message' :
+        result.dice.value >= 3 ? 'two_level_message' : 'three_level_message')
     }
 
     await ctx.msg.send(text, new Keyboard('under_the_message').useLayout('go_menu_btn'))

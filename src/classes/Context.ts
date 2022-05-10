@@ -38,7 +38,7 @@ export class Msg {
     this.update = update
   }
 
-  async send(text: string, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
+  async send(text?: string, extra: IMessageExtra | Keyboard = {}): Promise<IMessage | void> {
     try {
       if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().send(this.chat.id, text, extra)
@@ -74,7 +74,7 @@ export class Msg {
     }
   }
 
-  async toast(text: string): Promise<IMessage | void> {
+  async toast(text?: string): Promise<IMessage | void> {
     try {
       if (!this.update || !this.update.callback_query)
         throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
@@ -84,7 +84,7 @@ export class Msg {
     }
   }
 
-  async alert(text: string): Promise<IMessage | void> {
+  async alert(text?: string): Promise<IMessage | void> {
     try {
       if (!this.update || !this.update.callback_query)
         throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
@@ -94,7 +94,7 @@ export class Msg {
     }
   }
 
-  async edit(text: string, extra?: IMessageExtra | Keyboard): Promise<IMessage | void> {
+  async edit(text?: string, extra?: IMessageExtra | Keyboard): Promise<IMessage | void> {
     try {
       if (!this.chat || !this.message_id)
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
