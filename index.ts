@@ -24,25 +24,31 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   scenes: scene[] = []
   sceneController: SceneController = new SceneController(this.scenes)
   layouts: Layout[] = []
+  allowedUpdates: (eventHint | string)[] = ['chat_join_request', 'new_chat_member', 'message', 'text', 'dice', 'location', 'contact', 'photo', 'edit', 'chat_member', 'callback_query']
 
-  constructor(token: string) {
+  constructor(token: string, allowedUpdates: eventHint[] = []) {
     super()
     this.token = token
     this.connectionUri = TELEGRAM_BOT_API + this.token
+    this.allowedUpdates.push(...allowedUpdates)
 
     updateConnectionUri(this.connectionUri)
     updateToken(this.token)
   }
 
-  private async fetch<T>(url: string): Promise<T> {
-    const { data } = await axios.get(this.connectionUri + url)
+  private async fetch<T>(url: string, params?: any): Promise<T> {
+    const { data } = await axios.post(this.connectionUri + url, params)
     if (!data.ok) throw 'TelegramError'
     return data.result
   }
 
   private async *updateGetter(): AsyncIterableIterator<Promise<IUpdate[] | any>> {
     while (true) {
-      const updates = await this.fetch<any>('/getUpdates')
+      const updates = await this.fetch<any>(
+        '/getUpdates',
+        { allowed_updates: this.allowedUpdates }
+      )
+
       yield updates
     }
   }
@@ -108,6 +114,8 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
       events.push('join_request')
     } else if (update.edited_message) {
       events.push('edit')
+    } else if (update.chat_member) {
+      events.push('chat_member_update')
     }
 
     let handlers: IHandler[] = []

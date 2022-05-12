@@ -8,7 +8,7 @@ import {
   IGetChatMemberResponse, ILocation,
   IMessage,
   IMessageExtra, INewChatMember, IPhotoSize, IPhotoInfo, ISceneContext, ISendPhotoExtra,
-  IUpdate, IFile
+  IUpdate, IFile, IChatMemberUpdate
 } from '../types'
 
 import { Keyboard } from './Keyboard'
@@ -42,6 +42,26 @@ export class Msg {
     try {
       if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
       return new TelegramMethods().send(this.chat.id, text, extra)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async pin(msgId?: number, disableNotification?: boolean): Promise<boolean> {
+    try {
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!msgId) msgId = this.message_id
+      return new TelegramMethods().pinMessage(this.chat.id, msgId, disableNotification)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async unpin(msgId?: number): Promise<boolean> {
+    try {
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!msgId) msgId = this.message_id
+      return new TelegramMethods().unpinMessage(this.chat.id, msgId)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -205,6 +225,7 @@ export class Context<T> implements IContext {
   callbackQuery?: ICallbackQuery
   joinRequest?: IChatJoinRequest
   newChatMember?: INewChatMember
+  chatMemberUpdate?: IChatMemberUpdate
   dice?: IDiceContext
   location?: ILocation
   contact?: IContact
@@ -248,6 +269,9 @@ export class Context<T> implements IContext {
     } else if (update.edited_message) {
       this.message = update.edited_message
       this.from = update.edited_message?.from
+    } else if (update.chat_member) {
+      this.chatMemberUpdate = update.chat_member
+      this.from = update.chat_member?.from
     }
 
     this.update = update

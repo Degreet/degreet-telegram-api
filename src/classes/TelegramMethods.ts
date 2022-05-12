@@ -9,7 +9,7 @@ import {
   IGetChatMemberResponse, IKickChatMemberExtra,
   IMessage,
   IMessageExtra,
-  IPhotoInfo,
+  IPhotoInfo, IPinMessageExtra,
   ISendActionExtra,
   ISendDiceExtra,
   ISendPhotoExtra,
@@ -190,6 +190,37 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<boolean>('/deleteMessage', data)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  async pinMessage(chatId?: number | string, msgId?: number, disableNotification?: boolean): Promise<boolean> {
+    try {
+      if (!chatId || !msgId) return false
+
+      const data: IPinMessageExtra = {
+        chat_id: chatId,
+        message_id: msgId,
+        disable_notification: disableNotification,
+      }
+
+      return await TelegramMethods.fetch<boolean>('/pinChatMessage', data)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  async unpinMessage(chatId?: number | string, msgId?: number): Promise<boolean> {
+    try {
+      if (!chatId || !msgId) return false
+
+      const data: IPinMessageExtra = {
+        chat_id: chatId,
+        message_id: msgId,
+      }
+
+      return await TelegramMethods.fetch<boolean>('/unpinChatMessage', data)
     } catch (e: any) {
       throw e
     }

@@ -12,10 +12,11 @@ export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requ
 export type keyboardType = 'under_the_message' | 'under_the_chat' | 'remove_under_the_chat'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
-export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | 'edit' | string
+export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | 'edit' | 'chat_member_update' | string
 export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 export type eventType = eventHint | RegExp
 export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_video' | 'record_voice' | 'upload_voice' | 'upload_document' | 'choose_sticker' | 'find_location' | 'record_video_note' | 'upload_video_note' | string
+export type statusTypes = 'kicked' | 'left' | 'restricted' | 'member' | 'administrator' | 'creator'
 
 export interface ISendActionExtra {
   chat_id: number
@@ -235,6 +236,19 @@ export interface IChatJoinRequest {
   invite_link: IInviteLink
 }
 
+export interface IChatMemberUpdateStatus {
+  user: IChat
+  status: statusTypes
+}
+
+export interface IChatMemberUpdate {
+  chat: IChat
+  from: IChat
+  date: number
+  old_chat_member: IChatMemberUpdateStatus
+  new_chat_member: IChatMemberUpdateStatus
+}
+
 export interface IUpdate {
   update_id: number,
   from?: IChat,
@@ -242,6 +256,13 @@ export interface IUpdate {
   callback_query?: ICallbackQuery
   chat_join_request?: IChatJoinRequest
   edited_message?: IMessage
+  chat_member?: IChatMemberUpdate
+}
+
+export interface IPinMessageExtra {
+  chat_id: string | number
+  message_id: number
+  disable_notification?: boolean
 }
 
 export interface IEntity {
@@ -294,6 +315,6 @@ export interface IGetChatMemberExtra {
 }
 
 export interface IGetChatMemberResponse {
-  status: 'kicked' | 'left' | 'restricted' | 'member' | 'administrator' | 'creator'
+  status: statusTypes
   user: IChat
 }
