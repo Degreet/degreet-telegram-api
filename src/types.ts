@@ -1,7 +1,8 @@
-import { Msg } from './classes/Context'
+import { Msg } from './classes/Context/Msg'
 import { TelegramMethods } from './classes/TelegramMethods'
-import { BlockScene } from './classes/BlockScene'
-import { StepScene } from './classes/StepScene'
+import { BlockScene } from './classes/Scenes/BlockScene'
+import { StepScene } from './classes/Scenes/StepScene'
+import { Answer } from './classes/Context/Answer'
 
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
 export type nextMiddleware = () => any
@@ -56,12 +57,13 @@ export interface I18n {
 }
 
 export interface IContext<T = any> {
-  from?: IChat
+  sender?: IChat
   message?: IMessage
   update?: IUpdate
   msg: Msg
   props: any
   session: T
+  answer: Answer
   api: TelegramMethods
   params: string[]
   scene: ISceneContext
@@ -76,6 +78,7 @@ export interface IContext<T = any> {
   photoParts?: IPhotoSize[]
   photo?: IPhotoSize
   i18n?: I18n
+  chat?: IChat
 }
 
 export interface I18nSession {

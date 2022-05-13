@@ -1,4 +1,4 @@
-import { IHandler, scene, sceneInfoItem } from '../types'
+import { IHandler, scene, sceneInfoItem } from '../../types'
 import { BlockScene } from './BlockScene'
 
 const data: sceneInfoItem[] = []

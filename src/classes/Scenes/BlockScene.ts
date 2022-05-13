@@ -1,5 +1,5 @@
-import { BlockBuilder } from './BlockBuilder'
-import { middleware } from '../types'
+import { BlockBuilder } from '../Block/BlockBuilder'
+import { middleware } from '../../types'
 
 export class BlockScene extends BlockBuilder {
   name: string

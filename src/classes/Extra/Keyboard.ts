@@ -5,17 +5,14 @@ import {
   IMarkupLayout,
   IMessageExtra, IRemoveKeyboard, IReplyKeyboard,
   keyboardType,
-  parseModeTypes
-} from '../types'
+} from '../../types'
 
 const layouts: IMarkupLayout[] = []
 
 export class Keyboard {
   type: keyboardType
-  removeKeyboard: boolean = false
   unresolvedBtns: IButton[] = []
   rows: IButton[][] = []
-  extra: IMessageExtra = {}
   placeholder?: string
 
   constructor(type: keyboardType) {
@@ -79,31 +76,6 @@ export class Keyboard {
     return this
   }
 
-  public remove(): Keyboard {
-    this.removeKeyboard = true
-    return this
-  }
-
-  public disableWebPagePreview(): Keyboard {
-    this.extra.disable_web_page_preview = true
-    return this
-  }
-
-  public setParseMode(parseMode: parseModeTypes): Keyboard {
-    this.extra.parse_mode = parseMode
-    return this
-  }
-
-  public replyTo(msgId?: number): Keyboard {
-    this.extra.reply_to_message_id = msgId
-    return this
-  }
-
-  public setCaption(caption?: string): Keyboard {
-    this.extra.caption = caption
-    return this
-  }
-
   public saveLayout(name: string): Keyboard {
     layouts.push({
       name,
@@ -144,16 +116,11 @@ export class Keyboard {
       }
 
       replyMarkup = { reply_markup: keyboard }
-    } else if (this.type === 'remove_under_the_chat') {
+    } else {
       const keyboard: IRemoveKeyboard = { remove_keyboard: true }
       replyMarkup = { reply_markup: keyboard }
-    } else {
-      replyMarkup = this
     }
 
-    return {
-      ...replyMarkup,
-      ...this.extra,
-    }
+    return replyMarkup
   }
 }

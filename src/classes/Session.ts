@@ -5,7 +5,7 @@ export class Session<T> {
 
   middleware(): middleware {
     return (ctx: IContext, next: nextMiddleware): any => {
-      const userId: number | void = ctx.from?.id
+      const userId: number | void = ctx.sender?.id
       if (!userId) return next()
 
       let session: sessionItem<Partial<T>> | undefined = this.session.find(

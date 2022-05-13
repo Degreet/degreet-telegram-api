@@ -1,4 +1,4 @@
-import { middleware } from '../types'
+import { middleware } from '../../types'
 
 export class Layout {
   name: string

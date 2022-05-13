@@ -1,13 +1,7 @@
 import { IContext } from '../src/types'
 
 export interface ISession {
-  dice?: {
-    wins: number
-    fails: number
-  }
-  darts?: {
-    score: number
-  }
+  score?: number
 }
 
 export interface ICustomContext extends IContext {

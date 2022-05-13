@@ -1,8 +1,5 @@
 menu: |
-  🎲 +${diceWins} : -${diceFails}
-  🎯 ${dartsScore}
-drop_dice_btn: 🎲 Drop Dice!
-drop_darts_btn: 🎯 Darts!
+  🔗 <b>Your score:</b> ${score}
 one_level_message: You're the best!
 two_level_message: Bravo!
 three_level_message: You can do it better!

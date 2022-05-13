@@ -1,4 +1,4 @@
-import { IHandler, middleware } from '../types'
+import { IHandler, middleware } from '../../types'
 
 export class StepScene {
   name: string

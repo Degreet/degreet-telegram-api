@@ -1,4 +1,4 @@
-import { eventType, IHandler, middleware } from '../types'
+import { eventType, IHandler, middleware } from '../../types'
 
 export class BlockBuilder {
   handlers: IHandler[] = []

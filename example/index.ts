@@ -1,4 +1,4 @@
-import { Keyboard } from '../src/classes/Keyboard'
+import { Keyboard } from '../src/classes/Extra/Keyboard'
 import { DegreetTelegram, Session, I18n } from '../index'
 import { ICustomContext, ISession } from './types'
 import config from 'config'
