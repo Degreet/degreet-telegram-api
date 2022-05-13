@@ -54,6 +54,10 @@ export class Handler<T> {
         events.push('contact')
       } else if (update.message.photo) {
         events.push('photo')
+      } else if (update.message.invoice) {
+        events.push('payment')
+      } else if (update.message.successful_payment) {
+        events.push('successful_payment')
       }
     } else if (update.chat_join_request) {
       events.push('join_request')
@@ -61,6 +65,8 @@ export class Handler<T> {
       events.push('edit')
     } else if (update.chat_member) {
       events.push('chat_member_update')
+    } else if (update.pre_checkout_query) {
+      events.push('payment_answer')
     }
 
     let handlers: IHandler[] = []

@@ -10,6 +10,15 @@ block.onClick(['dice', 'darts', 'basketball'], async (ctx: ICustomContext): Prom
       await ctx.answer.delete()
     } catch {}
 
+    if (!ctx.session.lives) {
+      return ctx.answer.send(
+        ctx.i18n?.get('havent_lives'),
+        new Keyboard('under_the_message')
+          .btn('callback', ctx.i18n?.get('buy_lives_btn')!, 'buy_lives').row()
+          .useLayout('go_menu_btn')
+      )
+    } else ctx.session.lives--
+
     const diceElement: string | undefined = ctx.msg.clickedBtnId
     if (!diceElement) return
 

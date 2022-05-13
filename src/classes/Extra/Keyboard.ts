@@ -42,6 +42,9 @@ export class Keyboard {
       case 'switchInlineQuery':
         button = { text, switch_inline_query: action }
         break
+      case 'pay':
+        button = { text, pay: true }
+        break
       default:
         button = { text }
     }

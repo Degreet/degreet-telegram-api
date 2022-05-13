@@ -4,8 +4,8 @@ import {
   IChat,
   IFile, IGetChatMemberResponse,
   IMessage,
-  IPhotoInfo, IPhotoSize,
-  IUpdate
+  IPhotoSize,
+  IUpdate, sendTypes
 } from '../../types'
 
 import { Keyboard } from '../Extra/Keyboard'
@@ -29,10 +29,10 @@ export class Answer {
     this.update = update
   }
 
-  async send(text?: string, keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
+  async send(data?: sendTypes, keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
     try {
       if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
-      return TelegramMethods.send(this.chat.id, text, keyboard, options)
+      return TelegramMethods.send(this.chat.id, data, keyboard, options)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -67,15 +67,6 @@ export class Answer {
     }
   }
 
-  async sendPhoto(photo: IPhotoInfo, keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
-    try {
-      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
-      return TelegramMethods.sendPhoto(this.chat.id, photo, keyboard, options)
-    } catch (e: any) {
-      throw new Error(`TelegramError ${e.response.data.description}`)
-    }
-  }
-
   async sendDice(emoji?: diceEmojis, keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
     try {
       if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
@@ -100,6 +91,16 @@ export class Answer {
       if (!this.update || !this.update.callback_query)
         throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
       return TelegramMethods.alert(this.update?.callback_query?.id, text)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async payment(ok: boolean, errorMessage?: string): Promise<IMessage | void> {
+    try {
+      if (!this.update || !this.update.pre_checkout_query)
+        throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
+      return TelegramMethods.answerPayment(this.update.pre_checkout_query.id, ok, errorMessage)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }

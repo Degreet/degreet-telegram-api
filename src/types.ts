@@ -3,21 +3,61 @@ import { TelegramMethods } from './classes/TelegramMethods'
 import { BlockScene } from './classes/Scenes/BlockScene'
 import { StepScene } from './classes/Scenes/StepScene'
 import { Answer } from './classes/Context/Answer'
+import { Photo } from './classes/SendTypes/Photo'
+import { Payment } from './classes/SendTypes/Payment'
 
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
 export type nextMiddleware = () => any
 export type sessionItem<T> = [number, T]
 export type sceneInfoItem = [number, IScene]
 export type keyboard = IInlineKeyboard | IReplyKeyboard | IRemoveKeyboard
-export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requestLocation' | 'webApp' | 'url' | 'switchInlineQuery'
+export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requestLocation' | 'webApp' | 'url' | 'switchInlineQuery' | 'pay'
 export type keyboardType = 'under_the_message' | 'under_the_chat' | 'remove_under_the_chat'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
-export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | 'edit' | 'chat_member_update' | string
+export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | 'edit' | 'chat_member_update' | 'payment_answer' | 'payment' | 'successful_payment' | string
 export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 export type eventType = eventHint | RegExp
 export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_video' | 'record_voice' | 'upload_voice' | 'upload_document' | 'choose_sticker' | 'find_location' | 'record_video_note' | 'upload_video_note' | string
 export type statusTypes = 'kicked' | 'left' | 'restricted' | 'member' | 'administrator' | 'creator'
+export type photoTypes = 'url' | 'path'
+export type sendTypes = Payment | Photo | string
+export type needUserDataPayment = 'name' | 'phone_number' | 'email' | 'shipping_address'
+
+export interface IPaymentExtra {
+  chat_id?: number
+  title?: string
+  description?: string
+  payload?: string
+  provider_token?: string
+  currency?: string
+  prices?: IPaymentPrice[]
+  max_tip_amount?: number
+  suggested_tip_amounts?: number[]
+  start_parameter?: string
+  provider_data?: string
+  photo_url?: string
+  photo_size?: number
+  photo_width?: number
+  photo_height?: number
+  need_name?: boolean
+  need_phone_number?: boolean
+  need_email?: boolean
+  need_shipping_address?: boolean
+  send_phone_number_to_provider?: boolean
+  send_email_to_provider?: boolean
+  is_flexible?: boolean
+  disable_notification?: boolean
+  protect_content?: boolean
+  reply_to_message_id?: number
+  allow_sending_without_reply?: boolean
+  reply_markup?: keyboard
+}
+
+export interface IPaymentPrice {
+  label: string
+  amount: number
+}
 
 export interface ISendActionExtra {
   chat_id: number
@@ -79,6 +119,7 @@ export interface IContext<T = any> {
   photo?: IPhotoSize
   i18n?: I18n
   chat?: IChat
+  successfulPayment?: ISuccessfulPayment
 }
 
 export interface I18nSession {
@@ -191,6 +232,50 @@ export interface IPhotoSize {
   file_size?: number
 }
 
+export interface IPaymentData {
+  title: string
+  description: string
+  start_parameter: string
+  currency: string
+  total_amount: number
+}
+
+export interface IPaymentOrderInfo {
+  name?: string
+  phone_number?: string
+  email?: string
+  shipping_address?: IShippingAddress
+}
+
+export interface IPaymentAnswer {
+  id: string
+  from: IChat
+  currency: string
+  total_amount: number
+  invoice_payload: string
+  shipping_option_id: string
+  order_info: IPaymentOrderInfo
+}
+
+export interface IShippingAddress {
+  country_code: string
+  state: string
+  city: string
+  street_line1: string
+  street_line2: string
+  post_code: string
+}
+
+export interface ISuccessfulPayment {
+  currency: string
+  total_amount: number
+  invoice_payload: string
+  shipping_option_id?: string
+  order_info?: IPaymentOrderInfo
+  telegram_payment_charge_id: string
+  provider_payment_charge_id: string
+}
+
 export interface IMessage {
   message_id: number,
   from?: IChat,
@@ -203,6 +288,8 @@ export interface IMessage {
   location?: ILocation
   contact?: IContact
   photo?: IPhotoSize[]
+  invoice?: IPaymentData
+  successful_payment?: ISuccessfulPayment
 }
 
 export interface ILocation {
@@ -260,6 +347,7 @@ export interface IUpdate {
   chat_join_request?: IChatJoinRequest
   edited_message?: IMessage
   chat_member?: IChatMemberUpdate
+  pre_checkout_query?: IPaymentAnswer
 }
 
 export interface IPinMessageExtra {
@@ -286,6 +374,13 @@ export interface IButton {
   request_location?: boolean
   switch_inline_query?: string
   web_app?: IWebAppButton
+  pay?: boolean
+}
+
+export interface IPreCheckoutQueryExtra {
+  pre_checkout_query_id: string
+  ok: boolean
+  error_message?: string
 }
 
 export interface IAnswerCallbackQueryExtra {

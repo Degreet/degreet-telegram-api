@@ -5,6 +5,7 @@ import config from 'config'
 
 import menuLayout from './layouts/menu.layout'
 import diceBlock from './blocks/dice.block'
+import shopBlock from './blocks/shop.block'
 import * as path from 'path'
 
 const token: string = config.get<string>('botToken')
@@ -22,6 +23,7 @@ const i18n: I18n = new I18n(
 bot.use(new Session<ISession>().middleware())
 bot.use(i18n.middleware())
 bot.use(menuLayout)
+bot.use(shopBlock)
 bot.use(diceBlock)
 
 bot.onClick('menu', (ctx: ICustomContext): any => ctx.callLayout('menu'))

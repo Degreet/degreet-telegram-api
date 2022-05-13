@@ -6,7 +6,7 @@ import {
   ILocation,
   IMessage,
   INewChatMember, IPhotoSize, ISceneContext,
-  IUpdate, IChatMemberUpdate
+  IUpdate, IChatMemberUpdate, IPaymentData, IPaymentAnswer, ISuccessfulPayment
 } from '../../types'
 
 import { TelegramMethods } from '../TelegramMethods'
@@ -42,6 +42,9 @@ export class Context<T> implements IContext {
   contact?: IContact
   photoParts?: IPhotoSize[]
   photo?: IPhotoSize
+  payment?: IPaymentData
+  paymentAnswer?: IPaymentAnswer
+  successfulPayment?: ISuccessfulPayment
 
   constructor(update: IUpdate, sceneController: SceneController, layouts: Layout[]) {
     if (update.message) {
@@ -67,9 +70,13 @@ export class Context<T> implements IContext {
         this.location = update.message.location
       } else if (update.message.contact) {
         this.contact = update.message.contact
+      } else if (update.message.invoice) {
+        this.payment = update.message.invoice
       } else if (update.message.photo) {
         this.photoParts = update.message.photo
         this.photo = this.photoParts[this.photoParts.length - 1]
+      } else if (update.message.successful_payment) {
+        this.successfulPayment = update.message.successful_payment
       }
     } else if (update.callback_query) {
       this.message = update.callback_query?.message
@@ -84,6 +91,9 @@ export class Context<T> implements IContext {
     } else if (update.chat_member) {
       this.chatMemberUpdate = update.chat_member
       this.sender = update.chat_member?.from
+    } else if (update.pre_checkout_query) {
+      this.paymentAnswer = update.pre_checkout_query
+      this.sender = update.pre_checkout_query?.from
     }
 
     this.update = update

@@ -26,7 +26,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   info: IChat
   scenes: scene[] = []
   layouts: Layout[] = []
-  allowedUpdates: (eventHint | string)[] = ['chat_join_request', 'new_chat_member', 'message', 'text', 'dice', 'location', 'contact', 'photo', 'edit', 'chat_member', 'callback_query']
+  allowedUpdates: (eventHint | string)[] = ['chat_join_request', 'new_chat_member', 'message', 'text', 'dice', 'location', 'contact', 'photo', 'edit', 'chat_member', 'callback_query', 'pre_checkout_query', 'invoice']
 
   sceneController: SceneController = new SceneController(this.scenes)
   polling: Polling

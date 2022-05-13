@@ -8,11 +8,11 @@ import {
   IGetChatMemberExtra,
   IGetChatMemberResponse, IKickChatMemberExtra,
   IMessage,
-  IMessageExtra,
-  IPhotoInfo, IPinMessageExtra,
+  IMessageExtra, IPaymentExtra,
+  IPhotoInfo, IPinMessageExtra, IPreCheckoutQueryExtra,
   ISendActionExtra,
   ISendDiceExtra,
-  ISendPhotoExtra,
+  ISendPhotoExtra, sendTypes,
 } from '../types'
 
 import FormData from 'form-data'
@@ -20,6 +20,8 @@ import { Keyboard } from './Extra/Keyboard'
 import axios from 'axios'
 import * as fs from 'fs'
 import { Options } from './Extra/Options'
+import { Photo } from './SendTypes/Photo'
+import { Payment } from './SendTypes/Payment'
 
 let connectionUri = ''
 export const updateConnectionUri = (uri: string): string => connectionUri = uri
@@ -32,9 +34,9 @@ export class TelegramMethods {
     return token
   }
 
-  private static async fetch<T>(url: string, extra: any): Promise<T> {
+  private static async fetch<T>(url: string, params: any): Promise<T> {
     try {
-      const { data } = await axios.get(connectionUri + url, { params: extra })
+      const { data } = await axios.post(connectionUri + url, params)
       return data.result
     } catch (e: any) {
       throw new Error(`TelegramError: ${e.response.data.description}`)
@@ -48,14 +50,20 @@ export class TelegramMethods {
     }
   }
 
-  public static async send(userId?: number, text?: string, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public static async send(userId?: number, data?: sendTypes, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
-      if (!userId || !text) return
+      if (!userId || !data) return
+
+      if (data instanceof Photo) {
+        return this.sendPhoto(userId, data.info, keyboard, options)
+      } else if (data instanceof Payment) {
+        return this.sendInvoice(userId, data.info, keyboard, options)
+      }
 
       const initExtra: IMessageExtra = {
         chat_id: userId,
         parse_mode: 'HTML',
-        text,
+        text: data,
         ...this.getResultExtra(keyboard, options)
       }
 
@@ -65,25 +73,43 @@ export class TelegramMethods {
     }
   }
 
-  public static async sendPhoto(userId?: number, photo?: IPhotoInfo, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public static async sendInvoice(userId?: number, paymentInfo?: IPaymentExtra, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
-      if (!userId || !photo) return
+      if (!userId || !paymentInfo) return
+      if (keyboard && keyboard.type !== 'under_the_message') throw new Error(`TelegramError: For invoices you can use under_the_message keyboard only`)
+
+      const initExtra: IPaymentExtra = {
+        chat_id: userId,
+        parse_mode: 'HTML',
+        ...paymentInfo,
+        ...this.getResultExtra(keyboard, options)
+      }
+
+      return await this.fetch<IMessage>('/sendInvoice', initExtra)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  public static async sendPhoto(userId?: number, photoInfo?: IPhotoInfo, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+    try {
+      if (!userId || !photoInfo) return
       const resultExtra: IMessageExtra = this.getResultExtra(keyboard, options)
 
-      if (photo.url) {
+      if (photoInfo.url) {
         const initExtra: ISendPhotoExtra = {
           chat_id: userId,
           parse_mode: 'HTML',
-          photo: photo.url,
+          photo: photoInfo.url,
           ...resultExtra,
         }
 
         return await this.fetch<IMessage>('/sendPhoto', initExtra)
-      } else if (photo.photoPath) {
+      } else if (photoInfo.photoPath) {
         const formData = new FormData()
         formData.append('chat_id', userId)
         formData.append('parse_mode', 'HTML')
-        formData.append('photo', fs.createReadStream(photo.photoPath))
+        formData.append('photo', fs.createReadStream(photoInfo.photoPath))
 
         Object.keys(resultExtra).forEach((key: string): void => {
           const data = resultExtra[key as keyof typeof resultExtra]
@@ -158,6 +184,22 @@ export class TelegramMethods {
   public static async alert(callbackQueryId?: string, text?: string): Promise<IMessage | void> {
     try {
       return await this.toast(callbackQueryId, text, true)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  public static async answerPayment(preCheckoutQueryId: string, ok: boolean, errorMessage?: string): Promise<IMessage | void> {
+    try {
+      if (!preCheckoutQueryId) return
+
+      const extra: IPreCheckoutQueryExtra = {
+        pre_checkout_query_id: preCheckoutQueryId,
+        error_message: errorMessage,
+        ok,
+      }
+
+      return await this.fetch<IMessage>('/answerPreCheckoutQuery', extra)
     } catch (e: any) {
       throw e
     }
