@@ -8,6 +8,11 @@ export class Options {
     return this
   }
 
+  public disableNotification(): this {
+    this.extra.disable_notification = true
+    return this
+  }
+
   public setCaption(caption?: string): this {
     if (caption) this.extra.caption = caption
     return this

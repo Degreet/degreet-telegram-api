@@ -1,7 +1,8 @@
-import { Layout, Keyboard, Options } from '../../index'
+import { Layout, Keyboard } from '../../index'
 import { Photo } from '../../src/creators'
 import { ICustomContext } from '../types'
-import { FREE_LIVES, IMAGE_URL } from '../constants'
+import { FREE_LIVES } from '../constants'
+import * as path from 'path'
 
 const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<any> => {
   try {
@@ -25,9 +26,8 @@ const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<a
       await ctx.answer.edit(text, keyboard)
     } catch {
       await ctx.answer.send(
-        new Photo('url', IMAGE_URL),
+        new Photo('path', path.resolve(__dirname, 'img.jpg')).setCaption(text),
         keyboard,
-        new Options().setCaption(text)
       )
     }
   } catch (e: any) {

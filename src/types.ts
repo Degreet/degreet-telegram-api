@@ -2,9 +2,9 @@ import { Msg } from './classes/Context/Msg'
 import { TelegramMethods } from './classes/TelegramMethods'
 import { BlockScene } from './classes/Scenes/BlockScene'
 import { StepScene } from './classes/Scenes/StepScene'
-import { Answer } from './classes/Context/Answer'
-import { Photo } from './classes/SendTypes/Photo'
 import { Payment } from './classes/SendTypes/Payment'
+import { Answer } from './classes/Context/Answer'
+import { Media } from './classes/SendTypes/Media'
 
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
 export type nextMiddleware = () => any
@@ -20,9 +20,12 @@ export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 export type eventType = eventHint | RegExp
 export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_video' | 'record_voice' | 'upload_voice' | 'upload_document' | 'choose_sticker' | 'find_location' | 'record_video_note' | 'upload_video_note' | string
 export type statusTypes = 'kicked' | 'left' | 'restricted' | 'member' | 'administrator' | 'creator'
-export type photoTypes = 'url' | 'path'
-export type sendTypes = Payment | Photo | string
+export type mediaFileTypes = 'url' | 'path'
+export type mediaTypes = 'photo' | 'video' | 'document'
+export type sendTypes = Payment | Media | string
 export type needUserDataPayment = 'name' | 'phone_number' | 'email' | 'shipping_address'
+
+// export interface I
 
 export interface IPaymentExtra {
   chat_id?: number
@@ -135,9 +138,9 @@ export interface IFile {
   file_path?: string
 }
 
-export interface IPhotoInfo {
+export interface IMediaInfo {
   url?: string
-  photoPath?: string
+  path?: string
 }
 
 export interface ISceneContext {
@@ -176,6 +179,11 @@ export interface ISendPhotoExtra {
   reply_to_message_id?: number
   allow_sending_without_reply?: boolean
   reply_markup?: keyboard
+}
+
+export interface IMediaCache {
+  fileId: string
+  filePath: string
 }
 
 export interface IMessageExtra {

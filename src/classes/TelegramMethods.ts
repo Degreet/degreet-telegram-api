@@ -9,19 +9,18 @@ import {
   IGetChatMemberResponse, IKickChatMemberExtra,
   IMessage,
   IMessageExtra, IPaymentExtra,
-  IPhotoInfo, IPinMessageExtra, IPreCheckoutQueryExtra,
+  IPinMessageExtra, IPreCheckoutQueryExtra,
   ISendActionExtra,
   ISendDiceExtra,
-  ISendPhotoExtra, sendTypes,
+  sendTypes,
 } from '../types'
 
 import FormData from 'form-data'
 import { Keyboard } from './Extra/Keyboard'
 import axios from 'axios'
-import * as fs from 'fs'
 import { Options } from './Extra/Options'
-import { Photo } from './SendTypes/Photo'
 import { Payment } from './SendTypes/Payment'
+import { Media } from './SendTypes/Media'
 
 let connectionUri = ''
 export const updateConnectionUri = (uri: string): string => connectionUri = uri
@@ -54,8 +53,14 @@ export class TelegramMethods {
     try {
       if (!userId || !data) return
 
-      if (data instanceof Photo) {
-        return this.sendPhoto(userId, data.info, keyboard, options)
+      if (data instanceof Media) {
+        if (data.type === 'photo') {
+          return this.sendPhoto(userId, data, keyboard, options)
+        } else if (data.type === 'video') {
+          return this.sendVideo(userId, data, keyboard, options)
+        } else if (data.type === 'document') {
+          return this.sendDocument(userId, data, keyboard, options)
+        } else return
       } else if (data instanceof Payment) {
         return this.sendInvoice(userId, data.info, keyboard, options)
       }
@@ -91,42 +96,69 @@ export class TelegramMethods {
     }
   }
 
-  public static async sendPhoto(userId?: number, photoInfo?: IPhotoInfo, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public static async sendPhoto(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
-      if (!userId || !photoInfo) return
+      if (!userId || !media) return
       const resultExtra: IMessageExtra = this.getResultExtra(keyboard, options)
+      const formData: FormData = await media.getFormData(userId, resultExtra)
 
-      if (photoInfo.url) {
-        const initExtra: ISendPhotoExtra = {
-          chat_id: userId,
-          parse_mode: 'HTML',
-          photo: photoInfo.url,
-          ...resultExtra,
-        }
+      try {
+        const { data } = await axios.post(
+          connectionUri + '/sendPhoto',
+          formData,
+          { headers: formData.getHeaders() }
+        )
 
-        return await this.fetch<IMessage>('/sendPhoto', initExtra)
-      } else if (photoInfo.photoPath) {
-        const formData = new FormData()
-        formData.append('chat_id', userId)
-        formData.append('parse_mode', 'HTML')
-        formData.append('photo', fs.createReadStream(photoInfo.photoPath))
+        media.saveCache(data.result.photo[data.result.photo.length - 1].file_id)
+        return data.result
+      } catch (e: any) {
+        throw new Error(e.response ? `TelegramError: ${e.response.data.description}` : e)
+      }
+    } catch (e: any) {
+      throw e
+    }
+  }
 
-        Object.keys(resultExtra).forEach((key: string): void => {
-          const data = resultExtra[key as keyof typeof resultExtra]
-          formData.append(key, typeof data === 'object' ? JSON.stringify(data) : data)
-        })
+  public static async sendVideo(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+    try {
+      if (!userId || !media) return
+      const moreExtra: IMessageExtra = this.getResultExtra(keyboard, options)
+      const formData: FormData = await media.getFormData(userId, moreExtra)
 
-        try {
-          const { data } = await axios.post(
-            connectionUri + '/sendPhoto',
-            formData,
-            { headers: formData.getHeaders() }
-          )
+      try {
+        const { data } = await axios.post(
+          connectionUri + '/sendVideo',
+          formData,
+          { headers: formData.getHeaders(), maxBodyLength: Infinity }
+        )
 
-          return data.result
-        } catch (e: any) {
-          throw new Error(e.response ? `TelegramError: ${e.response.data.description}` : e)
-        }
+        media.saveCache(data.result.video.file_id)
+        return data.result
+      } catch (e: any) {
+        throw new Error(e.response ? `TelegramError: ${e.response.data.description}` : e)
+      }
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  public static async sendDocument(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+    try {
+      if (!userId || !media) return
+      const moreExtra: IMessageExtra = this.getResultExtra(keyboard, options)
+      const formData: FormData = await media.getFormData(userId, moreExtra)
+
+      try {
+        const { data } = await axios.post(
+          connectionUri + '/sendDocument',
+          formData,
+          { headers: formData.getHeaders(), maxBodyLength: Infinity }
+        )
+
+        media.saveCache(data.result.document.file_id)
+        return data.result
+      } catch (e: any) {
+        throw new Error(e.response ? `TelegramError: ${e.response.data.description}` : e)
       }
     } catch (e: any) {
       throw e

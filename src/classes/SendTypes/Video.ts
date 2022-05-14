@@ -1,6 +1,6 @@
 import { Media } from './Media'
 import { mediaTypes } from '../../types'
 
-export class Photo extends Media {
-  type: mediaTypes = 'photo'
+export class Video extends Media {
+  type: mediaTypes = 'video'
 }
