@@ -99,6 +99,19 @@ export interface I18n {
   get: (key: string, data?: any) => string | undefined
 }
 
+export interface IEditMessageMediaExtra {
+  type: mediaTypes
+  media: string
+  caption?: string
+  parse_mode?: parseModeTypes
+  caption_entities?: IEntity[]
+  thumb?: string
+  width?: number
+  height?: number
+  duration?: number
+  supports_streaming?: boolean
+}
+
 export interface IContext<T = any> {
   sender?: IChat
   message?: IMessage

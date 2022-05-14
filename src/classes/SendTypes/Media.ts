@@ -1,4 +1,4 @@
-import { IMediaCache, IMediaInfo, IMessageExtra, mediaFileTypes, mediaTypes } from '../../types'
+import { IEditMessageMediaExtra, IMediaCache, IMediaInfo, IMessageExtra, mediaFileTypes, mediaTypes } from '../../types'
 import { Thumb } from './Thumb'
 
 import FormData from 'form-data'
@@ -70,13 +70,9 @@ export class Media {
       else formData.append(this.type, fs.createReadStream(this.info.path))
     }
 
-    try {
-      if (this.type === 'video') {
-        formData.append('width', this.width || 1920)
-        formData.append('height', this.height || 1080)
-      }
-    } catch (e) {
-      console.error(e)
+    if (this.type === 'video') {
+      formData.append('width', this.width || 1920)
+      formData.append('height', this.height || 1080)
     }
 
     if (this.thumb) {
@@ -85,6 +81,46 @@ export class Media {
       else if (this.thumb.fileType === 'path' && this.thumb.info.path)
         formData.append('thumb', fs.createReadStream(this.thumb.info.path))
     }
+
+    Object.keys(moreExtra).forEach((key: string): void => {
+      const data = moreExtra[key as keyof typeof moreExtra]
+      formData.append(key, typeof data === 'object' ? JSON.stringify(data) : data)
+    })
+
+    return formData
+  }
+
+  public async getEditFormData(userId: number, msgId: number, moreExtra: IMessageExtra = {}): Promise<FormData> {
+    const formData: FormData = new FormData()
+    formData.append('chat_id', userId)
+    formData.append('message_id', msgId)
+
+    const mediaData: IEditMessageMediaExtra = {
+      type: this.type,
+      media: this.info.url || 'attach://mediaFile',
+      caption: this.caption,
+      parse_mode: 'HTML',
+    }
+
+    if (this.fileType === 'path' && this.info.path) {
+      formData.append('mediaFile', fs.createReadStream(this.info.path))
+    }
+
+    if (this.type === 'video') {
+      mediaData.width = this.width || 1920
+      mediaData.height = this.height || 1080
+    }
+
+    if (this.thumb) {
+      if (this.thumb.fileType === 'url') {
+        mediaData.thumb = this.thumb.info.url
+      } else if (this.thumb.info.path) {
+        mediaData.thumb = 'attach://thumb'
+        formData.append('thumb', fs.createReadStream(this.thumb.info.path))
+      }
+    }
+
+    formData.append('media', JSON.stringify(mediaData))
 
     Object.keys(moreExtra).forEach((key: string): void => {
       const data = moreExtra[key as keyof typeof moreExtra]

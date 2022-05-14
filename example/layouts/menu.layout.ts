@@ -23,13 +23,13 @@ const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<a
       .row()
 
     try {
-      await ctx.answer.edit(text, keyboard)
-    } catch {
-      await ctx.answer.send(
-        new Photo('path', path.resolve(__dirname, 'img.jpg')).setCaption(text),
-        keyboard,
-      )
-    }
+      await ctx.answer.editKeyboard(new Keyboard('under_the_message'))
+    } catch (e: any) {}
+
+    await ctx.answer.send(
+      new Photo('path', path.resolve(__dirname, 'img.jpg')).setCaption(text),
+      keyboard
+    )
   } catch (e: any) {
     console.error(e)
   }

@@ -49,7 +49,7 @@ export class TelegramMethods {
     }
   }
 
-  public static async send(userId?: number, data?: sendTypes, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async send(userId?: number, data?: sendTypes, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !data) return
 
@@ -69,16 +69,16 @@ export class TelegramMethods {
         chat_id: userId,
         parse_mode: 'HTML',
         text: data,
-        ...this.getResultExtra(keyboard, options)
+        ...TelegramMethods.getResultExtra(keyboard, options)
       }
 
-      return await this.fetch<IMessage>('/sendMessage', initExtra)
+      return await TelegramMethods.fetch<IMessage>('/sendMessage', initExtra)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async sendInvoice(userId?: number, paymentInfo?: IPaymentExtra, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async sendInvoice(userId?: number, paymentInfo?: IPaymentExtra, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !paymentInfo) return
       if (keyboard && keyboard.type !== 'under_the_message') throw new Error(`TelegramError: For invoices you can use under_the_message keyboard only`)
@@ -87,19 +87,19 @@ export class TelegramMethods {
         chat_id: userId,
         parse_mode: 'HTML',
         ...paymentInfo,
-        ...this.getResultExtra(keyboard, options)
+        ...TelegramMethods.getResultExtra(keyboard, options)
       }
 
-      return await this.fetch<IMessage>('/sendInvoice', initExtra)
+      return await TelegramMethods.fetch<IMessage>('/sendInvoice', initExtra)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async sendPhoto(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async sendPhoto(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !media) return
-      const resultExtra: IMessageExtra = this.getResultExtra(keyboard, options)
+      const resultExtra: IMessageExtra = TelegramMethods.getResultExtra(keyboard, options)
       const formData: FormData = await media.getFormData(userId, resultExtra)
 
       try {
@@ -119,10 +119,10 @@ export class TelegramMethods {
     }
   }
 
-  public static async sendVideo(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async sendVideo(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !media) return
-      const moreExtra: IMessageExtra = this.getResultExtra(keyboard, options)
+      const moreExtra: IMessageExtra = TelegramMethods.getResultExtra(keyboard, options)
       const formData: FormData = await media.getFormData(userId, moreExtra)
 
       try {
@@ -142,10 +142,10 @@ export class TelegramMethods {
     }
   }
 
-  public static async sendDocument(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async sendDocument(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !media) return
-      const moreExtra: IMessageExtra = this.getResultExtra(keyboard, options)
+      const moreExtra: IMessageExtra = TelegramMethods.getResultExtra(keyboard, options)
       const formData: FormData = await media.getFormData(userId, moreExtra)
 
       try {
@@ -165,7 +165,7 @@ export class TelegramMethods {
     }
   }
 
-  public static async sendDice(userId?: number, emoji?: diceEmojis, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async sendDice(userId?: number, emoji?: diceEmojis, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId) return
 
@@ -173,16 +173,16 @@ export class TelegramMethods {
         chat_id: userId,
         parse_mode: 'HTML',
         emoji,
-        ...this.getResultExtra(keyboard, options)
+        ...TelegramMethods.getResultExtra(keyboard, options)
       }
 
-      return await this.fetch<IMessage>('/sendDice', initExtra)
+      return await TelegramMethods.fetch<IMessage>('/sendDice', initExtra)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async sendChatAction(chatId?: number, action?: chatActions): Promise<boolean | void> {
+  public async sendChatAction(chatId?: number, action?: chatActions): Promise<boolean | void> {
     try {
       if (!chatId || !action) return
 
@@ -191,13 +191,13 @@ export class TelegramMethods {
         action,
       }
 
-      return await this.fetch<boolean>('/sendChatAction', initExtra)
+      return await TelegramMethods.fetch<boolean>('/sendChatAction', initExtra)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async toast(callbackQueryId?: string, text?: string, showAlert?: boolean): Promise<IMessage | void> {
+  public async toast(callbackQueryId?: string, text?: string, showAlert?: boolean): Promise<IMessage | void> {
     try {
       if (!callbackQueryId) return
 
@@ -207,13 +207,13 @@ export class TelegramMethods {
         text,
       }
 
-      return await this.fetch<IMessage>('/answerCallbackQuery', extra)
+      return await TelegramMethods.fetch<IMessage>('/answerCallbackQuery', extra)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async alert(callbackQueryId?: string, text?: string): Promise<IMessage | void> {
+  public async alert(callbackQueryId?: string, text?: string): Promise<IMessage | void> {
     try {
       return await this.toast(callbackQueryId, text, true)
     } catch (e: any) {
@@ -221,7 +221,7 @@ export class TelegramMethods {
     }
   }
 
-  public static async answerPayment(preCheckoutQueryId: string, ok: boolean, errorMessage?: string): Promise<IMessage | void> {
+  public async answerPayment(preCheckoutQueryId: string, ok: boolean, errorMessage?: string): Promise<IMessage | void> {
     try {
       if (!preCheckoutQueryId) return
 
@@ -231,31 +231,58 @@ export class TelegramMethods {
         ok,
       }
 
-      return await this.fetch<IMessage>('/answerPreCheckoutQuery', extra)
+      return await TelegramMethods.fetch<IMessage>('/answerPreCheckoutQuery', extra)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async edit(userId?: number, msgId?: number, text?: string, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async edit(userId?: number, msgId?: number, data?: sendTypes, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
-      if (!userId || !msgId || !text) return
+      if (!userId || !msgId || !data) return
+      if (data instanceof Payment) throw new Error(`TelegramError: You can't edit message to payment`)
 
-      const data: IEditMessageTextExtra = {
+      if (data instanceof Media) {
+        return this.editMedia(userId, msgId, data, keyboard, options)
+      }
+
+      const extra: IEditMessageTextExtra = {
         chat_id: userId,
         message_id: msgId,
         parse_mode: 'HTML',
-        text,
-        ...this.getResultExtra(keyboard, options)
+        text: data,
+        ...TelegramMethods.getResultExtra(keyboard, options)
       }
 
-      return await this.fetch<IMessage>('/editMessageText', data)
+      return await TelegramMethods.fetch<IMessage>('/editMessageText', extra)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async delete(userId?: number, msgId?: number): Promise<boolean> {
+  public async editMedia(userId?: number, msgId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+    try {
+      if (!userId || !msgId || !media) return
+      const resultExtra: IMessageExtra = TelegramMethods.getResultExtra(keyboard, options)
+      const formData: FormData = await media.getEditFormData(userId, msgId, resultExtra)
+
+      try {
+        const { data } = await axios.post(
+          connectionUri + '/editMessageMedia',
+          formData,
+          { headers: formData.getHeaders() }
+        )
+
+        return data.result
+      } catch (e: any) {
+        throw new Error(e.response ? `TelegramError: ${e.response.data.description}` : e)
+      }
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  public async delete(userId?: number, msgId?: number): Promise<boolean> {
     try {
       if (!userId || !msgId) return false
 
@@ -264,13 +291,13 @@ export class TelegramMethods {
         message_id: msgId,
       }
 
-      return await this.fetch<boolean>('/deleteMessage', data)
+      return await TelegramMethods.fetch<boolean>('/deleteMessage', data)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async pinMessage(chatId?: number | string, msgId?: number, disableNotification?: boolean): Promise<boolean> {
+  public async pinMessage(chatId?: number | string, msgId?: number, disableNotification?: boolean): Promise<boolean> {
     try {
       if (!chatId || !msgId) return false
 
@@ -280,13 +307,13 @@ export class TelegramMethods {
         disable_notification: disableNotification,
       }
 
-      return await this.fetch<boolean>('/pinChatMessage', data)
+      return await TelegramMethods.fetch<boolean>('/pinChatMessage', data)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async unpinMessage(chatId?: number | string, msgId?: number): Promise<boolean> {
+  public async unpinMessage(chatId?: number | string, msgId?: number): Promise<boolean> {
     try {
       if (!chatId || !msgId) return false
 
@@ -295,42 +322,42 @@ export class TelegramMethods {
         message_id: msgId,
       }
 
-      return await this.fetch<boolean>('/unpinChatMessage', data)
+      return await TelegramMethods.fetch<boolean>('/unpinChatMessage', data)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async editKeyboard(userId?: number, msgId?: number, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async editKeyboard(userId?: number, msgId?: number, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !msgId) return
 
       const data: IEditMarkupExtra = {
         chat_id: userId,
         message_id: msgId,
-        ...this.getResultExtra(keyboard, options)
+        ...TelegramMethods.getResultExtra(keyboard, options)
       }
 
-      return await this.fetch<IMessage>('/editMessageReplyMarkup', data)
+      return await TelegramMethods.fetch<IMessage>('/editMessageReplyMarkup', data)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async getChatMember(chatId: number | string, userId: number): Promise<IGetChatMemberResponse | void> {
+  public async getChatMember(chatId: number | string, userId: number): Promise<IGetChatMemberResponse | void> {
     try {
       const data: IGetChatMemberExtra = {
         chat_id: chatId,
         user_id: userId,
       }
 
-      return await this.fetch<IGetChatMemberResponse | void>('/getChatMember', data)
+      return await TelegramMethods.fetch<IGetChatMemberResponse | void>('/getChatMember', data)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async kickChatMember(chatId?: number | string, userId?: number, moreExtra?: IKickChatMemberExtra): Promise<boolean> {
+  public async kickChatMember(chatId?: number | string, userId?: number, moreExtra?: IKickChatMemberExtra): Promise<boolean> {
     try {
       if (!chatId || !userId) return false
 
@@ -340,15 +367,15 @@ export class TelegramMethods {
         ...moreExtra,
       }
 
-      return await this.fetch<boolean>('/banChatMember', data)
+      return await TelegramMethods.fetch<boolean>('/banChatMember', data)
     } catch (e: any) {
       throw e
     }
   }
 
-  public static async getFile(fileId: string): Promise<IFile | void> {
+  public async getFile(fileId: string): Promise<IFile | void> {
     try {
-      return await this.fetch<IFile | undefined>('/getFile', { file_id: fileId })
+      return await TelegramMethods.fetch<IFile | undefined>('/getFile', { file_id: fileId })
     } catch (e: any) {
       throw e
     }
