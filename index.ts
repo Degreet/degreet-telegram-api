@@ -26,7 +26,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   info: IChat
   scenes: scene[] = []
   layouts: Layout[] = []
-  allowedUpdates: (eventHint | string)[] = ['chat_join_request', 'new_chat_member', 'message', 'text', 'dice', 'location', 'contact', 'photo', 'edit', 'chat_member', 'callback_query', 'pre_checkout_query', 'invoice']
+  allowedUpdates: (eventHint | string)[]
 
   sceneController: SceneController = new SceneController(this.scenes)
   polling: Polling
@@ -35,10 +35,23 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
     super()
     this.token = token
     this.connectionUri = TELEGRAM_BOT_API + this.token
-    this.allowedUpdates.push(...allowedUpdates)
+    this.allowedUpdates = allowedUpdates
 
     updateConnectionUri(this.connectionUri)
     updateToken(this.token)
+  }
+
+  public get supportedUpdates() {
+    return [
+      'chat_join_request', 'new_chat_member', 'my_chat_member',
+      'dice', 'location', 'contact', 'photo',
+      'callback_query', 'pre_checkout_query',
+      'channel_post', 'edited_channel_post',
+      'inline_query', 'chosen_inline_result',
+      'shipping_query', 'invoice',
+      'message', 'text', 'edit',
+      'poll', 'poll_answer',
+    ]
   }
 
   private async fetch<T>(url: string, params?: any): Promise<T> {

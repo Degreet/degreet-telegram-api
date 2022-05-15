@@ -12,10 +12,10 @@ const layouts: IMarkupLayout[] = []
 export class Keyboard {
   type: keyboardType
   unresolvedBtns: IButton[] = []
+  savedLayouts: IMarkupLayoutEntity[] = []
   rows: IButton[][] = []
   placeholder?: string
   isI18n: boolean
-  savedLayouts: IMarkupLayoutEntity[] = []
 
   constructor(type: keyboardType, isI18n?: boolean) {
     this.type = type
@@ -24,6 +24,7 @@ export class Keyboard {
 
   public btn(type: allowedTypes, text: string, action?: string, hidden?: boolean): Keyboard {
     let button: IButton
+    if (this.type === 'remove_under_the_message') return this
 
     switch (type) {
       case 'callback':

@@ -12,20 +12,20 @@ export type sessionItem<T> = [number, T]
 export type sceneInfoItem = [number, IScene]
 export type keyboard = IInlineKeyboard | IReplyKeyboard | IRemoveKeyboard
 export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requestLocation' | 'webApp' | 'url' | 'switchInlineQuery' | 'pay'
-export type keyboardType = 'under_the_message' | 'under_the_chat' | 'remove_under_the_chat'
+export type keyboardType = 'under_the_message' | 'under_the_chat' | 'remove_under_the_chat' | 'remove_under_the_message'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
-export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | 'edit' | 'chat_member_update' | 'payment_answer' | 'payment' | 'successful_payment' | string
+export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | 'edit' | 'chat_member_update' | 'payment_answer' | 'payment' | 'successful_payment' | 'post' | 'post_edit' | 'inline_query' | 'inline_query_chose' | 'shipping_query' | 'poll' | 'poll_answer' | 'user_status_update' | string
 export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 export type eventType = eventHint | RegExp
 export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_video' | 'record_voice' | 'upload_voice' | 'upload_document' | 'choose_sticker' | 'find_location' | 'record_video_note' | 'upload_video_note' | string
 export type statusTypes = 'kicked' | 'left' | 'restricted' | 'member' | 'administrator' | 'creator'
 export type mediaFileTypes = 'url' | 'path'
 export type mediaTypes = 'photo' | 'video' | 'document'
-export type sendTypes = Payment | Media | string
+export type sendTypes = Payment | Media | 'keyboard' | string
 export type needUserDataPayment = 'name' | 'phone_number' | 'email' | 'shipping_address'
-
-// export interface I
+export type inlineQueryChatTypes = 'sender' | 'private' | 'group' | 'supergroup' | 'channel'
+export type pollTypes = 'regular' | 'quiz'
 
 export interface IPaymentExtra {
   chat_id?: number
@@ -188,19 +188,6 @@ export interface IRemoveKeyboard {
   remove_keyboard: boolean
 }
 
-export interface ISendPhotoExtra {
-  chat_id?: number
-  photo?: string
-  caption?: string
-  parse_mode?: parseModeTypes
-  caption_entities?: IEntity[]
-  disable_notification?: boolean
-  protect_content?: boolean
-  reply_to_message_id?: number
-  allow_sending_without_reply?: boolean
-  reply_markup?: keyboard
-}
-
 export interface IMediaCache {
   fileId: string
   filePath: string
@@ -294,6 +281,13 @@ export interface IShippingAddress {
   post_code: string
 }
 
+export interface IShippingQuery {
+  id: string
+  from: IChat
+  invoice_payload: string
+  shipping_address: IShippingAddress
+}
+
 export interface ISuccessfulPayment {
   currency: string
   total_amount: number
@@ -367,15 +361,66 @@ export interface IChatMemberUpdate {
   new_chat_member: IChatMemberUpdateStatus
 }
 
+export interface IInlineQuery {
+  id: string
+  from: IChat
+  query: string
+  offset: string
+  chat_type?: inlineQueryChatTypes
+  location?: ILocation
+}
+
+export interface IChosenInlineQuery {
+  result_id: string
+  from: IChat
+  location?: ILocation
+  inline_message_id?: string
+  query?: string
+}
+
+export interface IPollOption {
+  text: string
+  voter_count: number
+}
+
+export interface IPoll {
+  id: string
+  question: string
+  options: IPollOption[]
+  total_voter_count: number
+  is_closed: boolean
+  is_anonymous: boolean
+  type: pollTypes
+  allows_multiple_answers: boolean
+  correct_option_id?: number
+  explanation?: string
+  explanation_entities?: IEntity[]
+  open_period: number
+  close_date: number
+}
+
+export interface IPollAnswer {
+  poll_id: string
+  user: IChat
+  option_ids: number[]
+}
+
 export interface IUpdate {
   update_id: number,
-  from?: IChat,
   message?: IMessage
-  callback_query?: ICallbackQuery
-  chat_join_request?: IChatJoinRequest
   edited_message?: IMessage
-  chat_member?: IChatMemberUpdate
+  channel_post?: IMessage
+  edited_channel_post?: IMessage
+  inline_query?: IInlineQuery
+  chosen_inline_query?: IChosenInlineQuery
+  callback_query?: ICallbackQuery
+  shipping_query?: IShippingQuery
   pre_checkout_query?: IPaymentAnswer
+  poll?: IPoll
+  poll_answer?: IPollAnswer
+  my_chat_member?: IChatMemberUpdate
+  chat_member?: IChatMemberUpdate
+  chat_join_request?: IChatJoinRequest
 }
 
 export interface IPinMessageExtra {

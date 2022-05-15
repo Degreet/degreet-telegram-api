@@ -34,7 +34,7 @@ export class Handler<T> {
     }
   }
 
-  public async handleUpdate(update: IUpdate): Promise<void> {
+  private static getEvents(update: IUpdate) {
     const events: (eventHint | void)[] = []
 
     if (update.message) {
@@ -67,7 +67,29 @@ export class Handler<T> {
       events.push('chat_member_update')
     } else if (update.pre_checkout_query) {
       events.push('payment_answer')
+    } else if (update.poll) {
+      events.push('poll')
+    } else if (update.channel_post) {
+      events.push('post')
+    } else if (update.edited_channel_post) {
+      events.push('post_edit')
+    } else if (update.inline_query) {
+      events.push('inline_query')
+    } else if (update.chosen_inline_query) {
+      events.push('inline_query_chose')
+    } else if (update.shipping_query) {
+      events.push('shipping_query')
+    } else if (update.poll_answer) {
+      events.push('poll_answer')
+    } else if (update.my_chat_member) {
+      events.push('user_status_update')
     }
+
+    return events
+  }
+
+  public async handleUpdate(update: IUpdate): Promise<void> {
+    const events: (eventHint | void)[] = Handler.getEvents(update)
 
     let handlers: IHandler[] = []
     const entities: IEntity[] | void = update.message?.entities

@@ -243,10 +243,18 @@ export class TelegramMethods {
     }
   }
 
-  public async edit(userId?: number, msgId?: number, data?: sendTypes, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+  public async edit(userId?: number, msgId?: number, data?: sendTypes | Keyboard, keyboard?: Keyboard | Options | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !msgId || !data) return
       if (data instanceof Payment) throw new Error(`TelegramError: You can't edit message to payment`)
+
+      if (data instanceof Keyboard) {
+        if (keyboard instanceof Options) options = keyboard
+        keyboard = data
+        return this.editKeyboard(userId, msgId, keyboard, options)
+      }
+
+      if (keyboard instanceof Options) throw new Error(`TelegramError: You can't use options how keyboard`)
 
       if (data instanceof Media) {
         return this.editMedia(userId, msgId, data, keyboard, options)
@@ -261,6 +269,22 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<IMessage>('/editMessageText', extra)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  public async editKeyboard(userId?: number, msgId?: number, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
+    try {
+      if (!userId || !msgId) return
+
+      const data: IEditMarkupExtra = {
+        chat_id: userId,
+        message_id: msgId,
+        ...this.getResultExtra(keyboard, options)
+      }
+
+      return await TelegramMethods.fetch<IMessage>('/editMessageReplyMarkup', data)
     } catch (e: any) {
       throw e
     }
@@ -329,22 +353,6 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<boolean>('/unpinChatMessage', data)
-    } catch (e: any) {
-      throw e
-    }
-  }
-
-  public async editKeyboard(userId?: number, msgId?: number, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
-    try {
-      if (!userId || !msgId) return
-
-      const data: IEditMarkupExtra = {
-        chat_id: userId,
-        message_id: msgId,
-        ...this.getResultExtra(keyboard, options)
-      }
-
-      return await TelegramMethods.fetch<IMessage>('/editMessageReplyMarkup', data)
     } catch (e: any) {
       throw e
     }

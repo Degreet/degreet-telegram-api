@@ -23,7 +23,7 @@ const layout: Layout = new Layout('menu', async (ctx: ICustomContext): Promise<a
       .row()
 
     try {
-      await ctx.answer.editKeyboard(new Keyboard('under_the_message'))
+      await ctx.answer.edit(new Keyboard('under_the_message'))
     } catch (e: any) {}
 
     await ctx.answer.send(

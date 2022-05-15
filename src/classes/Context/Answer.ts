@@ -10,6 +10,8 @@ import {
 
 import { Keyboard } from '../Extra/Keyboard'
 import { TelegramMethods } from '../TelegramMethods'
+import { Options } from '../Extra/Options'
+
 import { TELEGRAM_FILE } from '../../constants'
 import axios, { AxiosResponse } from 'axios'
 import fs from 'fs'
@@ -108,7 +110,7 @@ export class Answer {
     }
   }
 
-  async edit(data?: sendTypes, keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
+  async edit(data?: sendTypes | Keyboard, keyboard?: Keyboard | Options | null, options?: any): Promise<IMessage | void> {
     try {
       if (!this.chat || !this.message_id)
         throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
@@ -119,6 +121,9 @@ export class Answer {
     }
   }
 
+  /**
+   * @deprecated Use .edit instead
+   */
   async editKeyboard(keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
     try {
       if (!this.chat || !this.message_id)
