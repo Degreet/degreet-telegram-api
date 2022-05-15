@@ -46,6 +46,8 @@ export class Handler<T> {
 
       if (update.message.new_chat_member) {
         events.push('new_chat_member')
+      } else if (update.message.left_chat_member) {
+        events.push('left_chat_member')
       } else if (update.message.dice) {
         events.push('dice')
       } else if (update.message.location) {
@@ -58,6 +60,12 @@ export class Handler<T> {
         events.push('payment')
       } else if (update.message.successful_payment) {
         events.push('successful_payment')
+      } else if (update.message.forward_from_chat) {
+        events.push('forward')
+      } else if (update.message.video) {
+        events.push('video')
+      } else if (update.message.document) {
+        events.push('document')
       }
     } else if (update.chat_join_request) {
       events.push('join_request')
@@ -79,8 +87,6 @@ export class Handler<T> {
       events.push('inline_query_chose')
     } else if (update.shipping_query) {
       events.push('shipping_query')
-    } else if (update.poll_answer) {
-      events.push('poll_answer')
     } else if (update.my_chat_member) {
       events.push('user_status_update')
     }

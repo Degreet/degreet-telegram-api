@@ -43,14 +43,15 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
 
   public get supportedUpdates() {
     return [
-      'chat_join_request', 'new_chat_member', 'my_chat_member',
+      'chat_join_request', 'my_chat_member',
+      'new_chat_member', 'left_chat_member',
       'dice', 'location', 'contact', 'photo',
       'callback_query', 'pre_checkout_query',
       'channel_post', 'edited_channel_post',
       'inline_query', 'chosen_inline_result',
       'shipping_query', 'invoice',
       'message', 'text', 'edit',
-      'poll', 'poll_answer',
+      'poll',
     ]
   }
 

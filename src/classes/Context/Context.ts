@@ -1,12 +1,22 @@
 import {
   ICallbackQuery,
   IPrivateChat,
-  IChatJoinRequest, IContact,
-  IContext, IDiceContext,
+  IChatJoinRequest,
+  IContact,
+  IContext,
+  IDiceContext,
   ILocation,
   IMessage,
-  INewChatMember, IPhotoSize, ISceneContext,
-  IUpdate, IChatMemberUpdate, IPaymentData, IPaymentAnswer, ISuccessfulPayment
+  IPhotoSize,
+  ISceneContext,
+  IUpdate,
+  IChatMemberUpdate,
+  IPaymentData,
+  IPaymentAnswer,
+  ISuccessfulPayment,
+  IInlineQuery,
+  IChosenInlineQuery,
+  IShippingQuery, IVideo, IVideoNote, IDocument
 } from '../../types'
 
 import { TelegramMethods } from '../TelegramMethods'
@@ -35,7 +45,8 @@ export class Context<T> implements IContext {
 
   callbackQuery?: ICallbackQuery
   joinRequest?: IChatJoinRequest
-  newChatMember?: INewChatMember
+  newChatMember?: IPrivateChat
+  leftChatMember?: IPrivateChat
   chatMemberUpdate?: IChatMemberUpdate
   dice?: IDiceContext
   location?: ILocation
@@ -45,6 +56,14 @@ export class Context<T> implements IContext {
   payment?: IPaymentData
   paymentAnswer?: IPaymentAnswer
   successfulPayment?: ISuccessfulPayment
+  inlineQuery?: IInlineQuery
+  chosenInlineQuery?: IChosenInlineQuery
+  shippingQuery?: IShippingQuery
+  userStatusUpdate?: IChatMemberUpdate
+  video?: IVideo
+  videoNote?: IVideoNote
+  document?: IDocument
+  post?: IMessage
 
   constructor(update: IUpdate, sceneController: SceneController, layouts: Layout[]) {
     if (update.message) {
@@ -64,6 +83,8 @@ export class Context<T> implements IContext {
 
       if (update.message.new_chat_member) {
         this.newChatMember = update.message.new_chat_member
+      } else if (update.message.left_chat_member) {
+        this.leftChatMember = update.message.left_chat_member
       } else if (update.message.dice) {
         this.dice = update.message.dice
       } else if (update.message.location) {
@@ -77,6 +98,12 @@ export class Context<T> implements IContext {
         this.photo = this.photoParts[this.photoParts.length - 1]
       } else if (update.message.successful_payment) {
         this.successfulPayment = update.message.successful_payment
+      } else if (update.message.video) {
+        this.video = update.message.video
+      } else if (update.message.video_note) {
+        this.videoNote = update.message.video_note
+      } else if (update.message.document) {
+        this.document = update.message.document
       }
     } else if (update.callback_query) {
       this.message = update.callback_query?.message
@@ -94,6 +121,24 @@ export class Context<T> implements IContext {
     } else if (update.pre_checkout_query) {
       this.paymentAnswer = update.pre_checkout_query
       this.sender = update.pre_checkout_query?.from
+    } else if (update.channel_post) {
+      this.message = this.post = update.channel_post
+      this.sender = update.channel_post?.from
+    } else if (update.edited_channel_post) {
+      this.message = update.edited_channel_post
+      this.sender = update.edited_channel_post?.from
+    } else if (update.inline_query) {
+      this.inlineQuery = update.inline_query
+      this.sender = update.inline_query?.from
+    } else if (update.chosen_inline_query) {
+      this.chosenInlineQuery = update.chosen_inline_query
+      this.sender = update.chosen_inline_query?.from
+    } else if (update.shipping_query) {
+      this.shippingQuery = update.shipping_query
+      this.sender = update.shipping_query?.from
+    } else if (update.my_chat_member) {
+      this.userStatusUpdate = update.my_chat_member
+      this.sender = update.my_chat_member?.new_chat_member.user
     }
 
     this.update = update

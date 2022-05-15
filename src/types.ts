@@ -15,7 +15,7 @@ export type allowedTypes = 'base' | 'callback' | 'cb' | 'requestContact' | 'requ
 export type keyboardType = 'under_the_message' | 'under_the_chat' | 'remove_under_the_chat' | 'remove_under_the_message'
 export type parseModeTypes = 'HTML' | 'Markdown' | 'MarkdownV2'
 export type scene = BlockScene | StepScene
-export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'photo' | 'edit' | 'chat_member_update' | 'payment_answer' | 'payment' | 'successful_payment' | 'post' | 'post_edit' | 'inline_query' | 'inline_query_chose' | 'shipping_query' | 'poll' | 'poll_answer' | 'user_status_update' | string
+export type eventHint = 'join_request' | 'new_chat_member' | 'message' | 'text' | 'dice' | 'location' | 'contact' | 'edit' | 'chat_member_update' | 'payment_answer' | 'payment' | 'successful_payment' | 'post' | 'post_edit' | 'inline_query' | 'inline_query_choose' | 'shipping_query' | 'poll' | 'user_status_update' | 'forward' | 'left_chat_member' | mediaTypes | string
 export type diceEmojis = '🎲' | '🎯' | '🏀' | '⚽' | '🎳' | '🎰'
 export type eventType = eventHint | RegExp
 export type chatActions = 'typing' | 'upload_photo' | 'record_video' | 'upload_video' | 'record_voice' | 'upload_voice' | 'upload_document' | 'choose_sticker' | 'find_location' | 'record_video_note' | 'upload_video_note' | string
@@ -144,6 +144,14 @@ export interface IContext<T = any> {
   i18n?: I18n
   chat?: IPrivateChat
   successfulPayment?: ISuccessfulPayment
+  inlineQuery?: IInlineQuery
+  chosenInlineQuery?: IChosenInlineQuery
+  shippingQuery?: IShippingQuery
+  userStatusUpdate?: IChatMemberUpdate
+  video?: IVideo
+  videoNote?: IVideoNote
+  document?: IDocument
+  post?: IMessage
 }
 
 export interface I18nSession {
@@ -509,12 +517,6 @@ export interface IPoll {
   close_date: number
 }
 
-export interface IPollAnswer {
-  poll_id: string
-  user: IPrivateChat
-  option_ids: number[]
-}
-
 export interface IUpdate {
   update_id: number,
   message?: IMessage
@@ -527,7 +529,6 @@ export interface IUpdate {
   shipping_query?: IShippingQuery
   pre_checkout_query?: IPaymentAnswer
   poll?: IPoll
-  poll_answer?: IPollAnswer
   my_chat_member?: IChatMemberUpdate
   chat_member?: IChatMemberUpdate
   chat_join_request?: IChatJoinRequest
