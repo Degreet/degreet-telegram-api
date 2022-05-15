@@ -1,8 +1,8 @@
 import {
   allowedTypes,
-  IButton,
+  IButton, IContext,
   IInlineKeyboard,
-  IMarkupLayout,
+  IMarkupLayout, IMarkupLayoutEntity,
   IMessageExtra, IRemoveKeyboard, IReplyKeyboard,
   keyboardType,
 } from '../../types'
@@ -14,9 +14,12 @@ export class Keyboard {
   unresolvedBtns: IButton[] = []
   rows: IButton[][] = []
   placeholder?: string
+  isI18n: boolean
+  savedLayouts: IMarkupLayoutEntity[] = []
 
-  constructor(type: keyboardType) {
+  constructor(type: keyboardType, isI18n?: boolean) {
     this.type = type
+    this.isI18n = isI18n || false
   }
 
   public btn(type: allowedTypes, text: string, action?: string, hidden?: boolean): Keyboard {
@@ -83,6 +86,7 @@ export class Keyboard {
     layouts.push({
       name,
       layout: this.rows,
+      isI18n: this.isI18n,
     })
 
     return this
@@ -94,6 +98,7 @@ export class Keyboard {
     ))
 
     if (layout) {
+      this.savedLayouts.push({ layout, isI18n: layout.isI18n, index: this.rows.length })
       this.rows.push(...layout.layout)
     }
 
@@ -105,8 +110,17 @@ export class Keyboard {
     return this
   }
 
-  public solveExtra(): IMessageExtra {
+  public solveExtra(ctx?: IContext): IMessageExtra {
     let replyMarkup
+    const savedLayouts: IMarkupLayoutEntity[] = this.savedLayouts
+
+    savedLayouts.forEach((layout: IMarkupLayoutEntity): void => {
+      if (layout.isI18n && ctx) {
+        this.rows[layout.index].forEach((btn: IButton): void => {
+          btn.text = ctx.i18n?.get(btn.text) || btn.text
+        })
+      }
+    })
 
     if (this.type === 'under_the_message') {
       const keyboard: IInlineKeyboard = { inline_keyboard: this.rows }

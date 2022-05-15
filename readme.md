@@ -4,20 +4,20 @@
 import { DegreetTelegram } from 'degreet-telegram'
 import { IContext } from 'degreet-telegram/src/types'
 
-const token: string = "Enter your token here"
+const token: string = 'Enter your token here'
 const bot: DegreetTelegram = new DegreetTelegram(token)
 
-bot.command('start', async (ctx: IContext): Promise<void> => {
+bot.command('start', async (ctx: IContext): Promise<any> => {
   try {
-    await ctx.msg.send('Hello!')
+    await ctx.answer.send('Hello!')
   } catch (e: any) {
     console.error(e)
   }
 })
 
-bot.launch().then(() => {
-  console.log(`Started on @${bot.info.username}`)
+bot.start().then((username: string): void => {
+  console.log(`Started on @${username}`)
 })
 ```
 
-Documentation: https://degreetpro.gitbook.io/degreet-telegram
+Full documentation is here: https://degreetpro.gitbook.io/degreet-telegram

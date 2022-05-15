@@ -97,9 +97,9 @@ export class Context<T> implements IContext {
     }
 
     this.update = update
-    this.api = new TelegramMethods()
+    this.api = new TelegramMethods(this)
     this.msg = new Msg(this.message, this.update)
-    this.answer = new Answer(this.sender, this.message, this.update)
+    this.answer = new Answer(this, this.sender, this.message, this.update)
     this.scene = this.getSceneParams(sceneController)
     this.layouts = layouts
   }

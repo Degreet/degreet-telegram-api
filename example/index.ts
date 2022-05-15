@@ -11,8 +11,8 @@ import * as path from 'path'
 const token: string = config.get<string>('botToken')
 const bot: DegreetTelegram<ICustomContext> = new DegreetTelegram<ICustomContext>(token)
 
-new Keyboard('under_the_message')
-  .btn('callback', 'Go to menu', 'menu').row()
+new Keyboard('under_the_message', true)
+  .btn('callback', 'menu_btn', 'menu').row()
   .saveLayout('go_menu_btn')
 
 const i18n: I18n = new I18n(
@@ -29,6 +29,6 @@ bot.use(diceBlock)
 bot.onClick('menu', (ctx: ICustomContext): any => ctx.callLayout('menu'))
 bot.command('start', (ctx: ICustomContext): any => ctx.callLayout('menu'))
 
-bot.start().then((): void => {
-  console.log(`Bot started on @${bot.info.username}`)
+bot.start().then((username: string): void => {
+  console.log(`Bot started on @${username}`)
 })

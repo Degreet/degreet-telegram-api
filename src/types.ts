@@ -75,8 +75,15 @@ export interface IKickChatMemberExtra {
 }
 
 export interface IMarkupLayout {
-  name: string,
+  name: string
   layout: IButton[][]
+  isI18n: boolean
+}
+
+export interface IMarkupLayoutEntity {
+  layout: IMarkupLayout
+  isI18n: boolean
+  index: number
 }
 
 export interface IDiceContext {

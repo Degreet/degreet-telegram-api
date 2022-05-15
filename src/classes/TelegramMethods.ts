@@ -1,7 +1,7 @@
 import {
   chatActions,
   diceEmojis,
-  IAnswerCallbackQueryExtra,
+  IAnswerCallbackQueryExtra, IContext,
   IDeleteMessageTextExtra,
   IEditMarkupExtra,
   IEditMessageTextExtra, IFile,
@@ -29,6 +29,12 @@ let token = ''
 export const updateToken = (newToken: string): string => token = newToken
 
 export class TelegramMethods {
+  ctx?: IContext
+  
+  constructor(ctx?: IContext) {
+    this.ctx = ctx
+  }
+  
   public static get token(): string {
     return token
   }
@@ -42,9 +48,9 @@ export class TelegramMethods {
     }
   }
   
-  private static getResultExtra(keyboard?: Keyboard | null, options?: Options | null): IMessageExtra {
+  private getResultExtra(keyboard?: Keyboard | null, options?: Options | null): IMessageExtra {
     return {
-      ...(keyboard ? keyboard.solveExtra() : {}),
+      ...(keyboard ? keyboard.solveExtra(this.ctx) : {}),
       ...(options ? options.extra : {}),
     }
   }
@@ -69,7 +75,7 @@ export class TelegramMethods {
         chat_id: userId,
         parse_mode: 'HTML',
         text: data,
-        ...TelegramMethods.getResultExtra(keyboard, options)
+        ...this.getResultExtra(keyboard, options)
       }
 
       return await TelegramMethods.fetch<IMessage>('/sendMessage', initExtra)
@@ -87,7 +93,7 @@ export class TelegramMethods {
         chat_id: userId,
         parse_mode: 'HTML',
         ...paymentInfo,
-        ...TelegramMethods.getResultExtra(keyboard, options)
+        ...this.getResultExtra(keyboard, options)
       }
 
       return await TelegramMethods.fetch<IMessage>('/sendInvoice', initExtra)
@@ -99,7 +105,7 @@ export class TelegramMethods {
   public async sendPhoto(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !media) return
-      const resultExtra: IMessageExtra = TelegramMethods.getResultExtra(keyboard, options)
+      const resultExtra: IMessageExtra = this.getResultExtra(keyboard, options)
       const formData: FormData = await media.getFormData(userId, resultExtra)
 
       try {
@@ -122,7 +128,7 @@ export class TelegramMethods {
   public async sendVideo(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !media) return
-      const moreExtra: IMessageExtra = TelegramMethods.getResultExtra(keyboard, options)
+      const moreExtra: IMessageExtra = this.getResultExtra(keyboard, options)
       const formData: FormData = await media.getFormData(userId, moreExtra)
 
       try {
@@ -145,7 +151,7 @@ export class TelegramMethods {
   public async sendDocument(userId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !media) return
-      const moreExtra: IMessageExtra = TelegramMethods.getResultExtra(keyboard, options)
+      const moreExtra: IMessageExtra = this.getResultExtra(keyboard, options)
       const formData: FormData = await media.getFormData(userId, moreExtra)
 
       try {
@@ -173,7 +179,7 @@ export class TelegramMethods {
         chat_id: userId,
         parse_mode: 'HTML',
         emoji,
-        ...TelegramMethods.getResultExtra(keyboard, options)
+        ...this.getResultExtra(keyboard, options)
       }
 
       return await TelegramMethods.fetch<IMessage>('/sendDice', initExtra)
@@ -251,7 +257,7 @@ export class TelegramMethods {
         message_id: msgId,
         parse_mode: 'HTML',
         text: data,
-        ...TelegramMethods.getResultExtra(keyboard, options)
+        ...this.getResultExtra(keyboard, options)
       }
 
       return await TelegramMethods.fetch<IMessage>('/editMessageText', extra)
@@ -263,7 +269,7 @@ export class TelegramMethods {
   public async editMedia(userId?: number, msgId?: number, media?: Media, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {
     try {
       if (!userId || !msgId || !media) return
-      const resultExtra: IMessageExtra = TelegramMethods.getResultExtra(keyboard, options)
+      const resultExtra: IMessageExtra = this.getResultExtra(keyboard, options)
       const formData: FormData = await media.getEditFormData(userId, msgId, resultExtra)
 
       try {
@@ -335,7 +341,7 @@ export class TelegramMethods {
       const data: IEditMarkupExtra = {
         chat_id: userId,
         message_id: msgId,
-        ...TelegramMethods.getResultExtra(keyboard, options)
+        ...this.getResultExtra(keyboard, options)
       }
 
       return await TelegramMethods.fetch<IMessage>('/editMessageReplyMarkup', data)

@@ -67,12 +67,14 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
     })
   }
 
-  public async start(): Promise<any> {
+  public async start(): Promise<string> {
     const handler: Handler<T> = new Handler<T>(this.sceneController, this.scenes, this.layouts, this.handlers, this.middlewares)
     this.polling = new Polling(this.connectionUri, this.allowedUpdates, handler)
 
     this.info = await this.fetch<IChat>('/getMe')
     this.polling.start()
+
+    return this.info.username
   }
 }
 
