@@ -1,4 +1,4 @@
-import { eventHint, IPrivateChat, IContext, IHandler, middleware, scene } from './src/types'
+import { eventHint, IPrivateChat, IContext, IHandler, middleware, scene, IOptions } from './src/types'
 import { TELEGRAM_BOT_API } from './src/constants'
 
 import { updateConnectionUri, updateToken } from './src/classes/TelegramMethods'
@@ -19,6 +19,7 @@ import { SceneController } from './src/classes/Scenes/SceneController'
 import axios from 'axios'
 import { Polling } from './src/classes/Update/Polling'
 import { Handler } from './src/classes/Update/Handler'
+import { WebhookRunner } from './src/classes/Update/WebhookRunner'
 
 class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   token: string
@@ -26,16 +27,24 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   info: IPrivateChat
   scenes: scene[] = []
   layouts: Layout[] = []
-  allowedUpdates: (eventHint | string)[]
+
+  limit?: number
+  timeout?: number
+  allowedUpdates?: (eventHint | string)[]
+  webhook?: string
 
   sceneController: SceneController = new SceneController(this.scenes)
-  polling: Polling
+  runner: Polling | WebhookRunner
 
-  constructor(token: string, allowedUpdates: eventHint[] = []) {
+  constructor(token: string, options: IOptions = {}) {
     super()
     this.token = token
     this.connectionUri = TELEGRAM_BOT_API + this.token
-    this.allowedUpdates = allowedUpdates
+
+    this.allowedUpdates = options.allowedUpdates
+    this.webhook = options.webhook
+    this.limit = options.limit
+    this.timeout = options.timeout
 
     updateConnectionUri(this.connectionUri)
     updateToken(this.token)
@@ -81,12 +90,19 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
     })
   }
 
-  public async start(): Promise<string> {
+  public async start(port?: number): Promise<string> {
     const handler: Handler<T> = new Handler<T>(this.sceneController, this.scenes, this.layouts, this.handlers, this.middlewares)
-    this.polling = new Polling(this.connectionUri, this.allowedUpdates, handler)
+
+    if (!this.webhook) {
+      await this.fetch<any>('/deleteWebhook')
+      this.runner = new Polling(this.connectionUri, this.allowedUpdates || [], handler)
+    } else {
+      await this.fetch<any>(`/setWebhook?url=${this.webhook}`)
+      this.runner = new WebhookRunner(this.connectionUri, this.allowedUpdates || [], handler)
+    }
 
     this.info = await this.fetch<IPrivateChat>('/getMe')
-    this.polling.start()
+    this.runner.start(port)
 
     return this.info.username
   }

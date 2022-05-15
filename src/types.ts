@@ -28,6 +28,13 @@ export type inlineQueryChatTypes = 'sender' | 'private' | 'group' | 'supergroup'
 export type pollTypes = 'regular' | 'quiz'
 export type chatTypes = 'private' | 'group' | 'supergroup' | 'channel'
 
+export interface IOptions {
+  allowedUpdates?: eventHint[]
+  limit?: number
+  timeout?: number
+  webhook?: string
+}
+
 export interface IPaymentExtra {
   chat_id?: number
   title?: string
