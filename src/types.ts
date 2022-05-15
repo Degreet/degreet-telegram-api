@@ -306,6 +306,22 @@ export interface IChatPhoto {
   big_file_unique_id: string
 }
 
+export interface IChatPermission {
+  can_send_messages?: boolean
+  can_send_media_messages?: boolean
+  can_send_polls?: boolean
+  can_send_other_messages?: boolean
+  can_add_web_page_previews?: boolean
+  can_change_info?: boolean
+  can_invite_users?: boolean
+  can_pin_messages?: boolean
+}
+
+export interface IChatLocation {
+  location: ILocation
+  address: string
+}
+
 export interface IChat extends IPrivateChat {
   type: chatTypes
   title?: string
@@ -315,13 +331,14 @@ export interface IChat extends IPrivateChat {
   description?: string
   invite_link?: string
   pinned_message?: IMessage
+  permissions?: IChatPermission[]
   slow_mode_delay?: number
   message_auto_delete_time: number
   has_protected_content?: true
   sticker_set_name?: string
   can_set_sticker_set?: true
   linked_chat_id?: number
-  // TODO: permissions, location
+  location?: IChatLocation
 }
 
 export interface IDocument {
