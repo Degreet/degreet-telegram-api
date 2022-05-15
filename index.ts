@@ -1,4 +1,4 @@
-import { eventHint, IChat, IContext, IHandler, middleware, scene } from './src/types'
+import { eventHint, IPrivateChat, IContext, IHandler, middleware, scene } from './src/types'
 import { TELEGRAM_BOT_API } from './src/constants'
 
 import { updateConnectionUri, updateToken } from './src/classes/TelegramMethods'
@@ -23,7 +23,7 @@ import { Handler } from './src/classes/Update/Handler'
 class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   token: string
   connectionUri: string
-  info: IChat
+  info: IPrivateChat
   scenes: scene[] = []
   layouts: Layout[] = []
   allowedUpdates: (eventHint | string)[]
@@ -84,7 +84,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
     const handler: Handler<T> = new Handler<T>(this.sceneController, this.scenes, this.layouts, this.handlers, this.middlewares)
     this.polling = new Polling(this.connectionUri, this.allowedUpdates, handler)
 
-    this.info = await this.fetch<IChat>('/getMe')
+    this.info = await this.fetch<IPrivateChat>('/getMe')
     this.polling.start()
 
     return this.info.username

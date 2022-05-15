@@ -1,7 +1,7 @@
 import {
   chatActions,
   diceEmojis,
-  IChat, IContext,
+  IPrivateChat, IContext,
   IFile, IGetChatMemberResponse,
   IMessage,
   IPhotoSize,
@@ -17,14 +17,14 @@ import axios, { AxiosResponse } from 'axios'
 import fs from 'fs'
 
 export class Answer {
-  chat?: IChat
-  from?: IChat
+  chat?: IPrivateChat
+  from?: IPrivateChat
   update?: IUpdate
   message?: IMessage
   message_id?: number
   ctx?: IContext
 
-  constructor(ctx: IContext, from?: IChat, message?: IMessage, update?: IUpdate) {
+  constructor(ctx: IContext, from?: IPrivateChat, message?: IMessage, update?: IUpdate) {
     this.from = from
     this.message = message
     this.chat = message && message.chat || from

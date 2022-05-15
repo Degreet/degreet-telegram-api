@@ -26,6 +26,7 @@ export type sendTypes = Payment | Media | 'keyboard' | string
 export type needUserDataPayment = 'name' | 'phone_number' | 'email' | 'shipping_address'
 export type inlineQueryChatTypes = 'sender' | 'private' | 'group' | 'supergroup' | 'channel'
 export type pollTypes = 'regular' | 'quiz'
+export type chatTypes = 'private' | 'group' | 'supergroup' | 'channel'
 
 export interface IPaymentExtra {
   chat_id?: number
@@ -120,7 +121,7 @@ export interface IEditMessageMediaExtra {
 }
 
 export interface IContext<T = any> {
-  sender?: IChat
+  sender?: IPrivateChat
   message?: IMessage
   update?: IUpdate
   msg: Msg
@@ -141,7 +142,7 @@ export interface IContext<T = any> {
   photoParts?: IPhotoSize[]
   photo?: IPhotoSize
   i18n?: I18n
-  chat?: IChat
+  chat?: IPrivateChat
   successfulPayment?: ISuccessfulPayment
 }
 
@@ -214,16 +215,6 @@ export interface IHandler {
   middlewares: middleware[]
 }
 
-export interface IChat {
-  id: number
-  is_bot: boolean
-  first_name: string
-  username: string
-  can_join_groups: boolean
-  can_read_all_group_messages: boolean
-  supports_inline_queries: boolean
-}
-
 export interface INewChatMember {
   id: number
   is_bot: boolean
@@ -264,7 +255,7 @@ export interface IPaymentOrderInfo {
 
 export interface IPaymentAnswer {
   id: string
-  from: IChat
+  from: IPrivateChat
   currency: string
   total_amount: number
   invoice_payload: string
@@ -283,7 +274,7 @@ export interface IShippingAddress {
 
 export interface IShippingQuery {
   id: string
-  from: IChat
+  from: IPrivateChat
   invoice_payload: string
   shipping_address: IShippingAddress
 }
@@ -298,20 +289,122 @@ export interface ISuccessfulPayment {
   provider_payment_charge_id: string
 }
 
+export interface IPrivateChat {
+  id: number
+  is_bot: boolean
+  first_name: string
+  username: string
+  can_join_groups: boolean
+  can_read_all_group_messages: boolean
+  supports_inline_queries: boolean
+}
+
+export interface IChatPhoto {
+  small_file_id: string
+  small_file_unique_id: string
+  big_file_id: string
+  big_file_unique_id: string
+}
+
+export interface IChat extends IPrivateChat {
+  type: chatTypes
+  title?: string
+  photo?: IChatPhoto
+  bio?: string
+  has_private_forwards?: true
+  description?: string
+  invite_link?: string
+  pinned_message?: IMessage
+  slow_mode_delay?: number
+  message_auto_delete_time: number
+  has_protected_content?: true
+  sticker_set_name?: string
+  can_set_sticker_set?: true
+  linked_chat_id?: number
+  // TODO: permissions, location
+}
+
+export interface IDocument {
+  file_id: string
+  file_unique_id: string
+  thumb?: IPhotoSize[]
+  file_name?: string
+  mime_type?: string
+  file_size?: number
+}
+
+export interface IVideo {
+  file_id: string
+  file_unique_id: string
+  width: number
+  height: number
+  duration: number
+  thumb?: IPhotoSize[]
+  file_name?: string
+  mime_type?: string
+  file_size?: number
+}
+
+export interface IVideoNote {
+  file_id: string
+  file_unique_id: string
+  length: number
+  duration: number
+  thumb?: IPhotoSize[]
+  file_size?: number
+}
+
+export interface IWebAppData {
+  data: string
+  button_text: string
+}
+
 export interface IMessage {
   message_id: number,
-  from?: IChat,
-  chat: IChat,
+  from?: IPrivateChat,
+  sender_chat?: IPrivateChat,
   date: number,
+  chat: IChat,
+  forward_from?: IPrivateChat
+  forward_from_chat?: IChat
+  forward_from_message_id?: number
+  forward_signature?: string
+  forward_sender_name?: string
+  forward_date?: number
+  is_automatic_forward?: true
+  reply_to_message?: IMessage
+  via_bot?: IPrivateChat
+  edit_date?: number
+  has_protected_content?: true
+  media_group_id?: string
+  author_signature?: string
   text: string,
   entities?: IEntity[]
-  new_chat_member?: INewChatMember
-  dice?: IDiceContext
-  location?: ILocation
-  contact?: IContact
+  document?: IDocument
   photo?: IPhotoSize[]
+  video?: IVideo
+  video_note?: IVideoNote
+  caption?: string
+  caption_entities?: IEntity[]
+  contact?: IContact
+  dice?: IDiceContext
+  poll?: IPoll
+  location?: ILocation
+  new_chat_member?: IPrivateChat
+  left_chat_member?: IPrivateChat
+  new_chat_title?: string
+  new_chat_photo?: IPhotoSize[]
+  delete_chat_photo?: true
+  group_chat_created?: true
+  supergroup_chat_created?: true
+  channel_chat_created?: true
+  migrate_to_chat_id?: number
+  migrate_from_chat_id?: number
+  pinned_message?: IMessage
   invoice?: IPaymentData
   successful_payment?: ISuccessfulPayment
+  web_app_data?: IWebAppData
+  reply_markup?: keyboard
 }
 
 export interface ILocation {
@@ -325,7 +418,7 @@ export interface ILocation {
 
 export interface ICallbackQuery {
   id: string,
-  from: IChat
+  from: IPrivateChat
   message: IMessage
   chat_instance: string
   data: string
@@ -334,7 +427,7 @@ export interface ICallbackQuery {
 export interface IInviteLink {
   invite_link: string
   name: string
-  creator: IChat
+  creator: IPrivateChat
   pending_join_request_count: number
   creates_join_request: boolean
   is_primary: boolean
@@ -343,19 +436,19 @@ export interface IInviteLink {
 
 export interface IChatJoinRequest {
   chat: IChat
-  from: IChat
+  from: IPrivateChat
   date: number
   invite_link: IInviteLink
 }
 
 export interface IChatMemberUpdateStatus {
-  user: IChat
+  user: IPrivateChat
   status: statusTypes
 }
 
 export interface IChatMemberUpdate {
   chat: IChat
-  from: IChat
+  from: IPrivateChat
   date: number
   old_chat_member: IChatMemberUpdateStatus
   new_chat_member: IChatMemberUpdateStatus
@@ -363,7 +456,7 @@ export interface IChatMemberUpdate {
 
 export interface IInlineQuery {
   id: string
-  from: IChat
+  from: IPrivateChat
   query: string
   offset: string
   chat_type?: inlineQueryChatTypes
@@ -372,7 +465,7 @@ export interface IInlineQuery {
 
 export interface IChosenInlineQuery {
   result_id: string
-  from: IChat
+  from: IPrivateChat
   location?: ILocation
   inline_message_id?: string
   query?: string
@@ -401,7 +494,7 @@ export interface IPoll {
 
 export interface IPollAnswer {
   poll_id: string
-  user: IChat
+  user: IPrivateChat
   option_ids: number[]
 }
 
@@ -487,5 +580,5 @@ export interface IGetChatMemberExtra {
 
 export interface IGetChatMemberResponse {
   status: statusTypes
-  user: IChat
+  user: IPrivateChat
 }

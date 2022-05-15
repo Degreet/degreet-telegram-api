@@ -1,6 +1,6 @@
 import {
   ICallbackQuery,
-  IChat,
+  IPrivateChat,
   IChatJoinRequest, IContact,
   IContext, IDiceContext,
   ILocation,
@@ -16,8 +16,8 @@ import { Msg } from './Msg'
 import { Answer } from './Answer'
 
 export class Context<T> implements IContext {
-  sender?: IChat
-  chat?: IChat
+  sender?: IPrivateChat
+  chat?: IPrivateChat
 
   props: Partial<T> = {}
   session: any = {}
