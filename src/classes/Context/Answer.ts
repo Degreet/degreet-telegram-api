@@ -35,7 +35,7 @@ export class Answer {
 
   async send(data?: sendTypes, keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
     try {
-      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't find userId`)
       return new TelegramMethods(this.ctx).send(this.chat.id, data, keyboard, options)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
@@ -44,7 +44,7 @@ export class Answer {
 
   async pin(msgId?: number, disableNotification?: boolean): Promise<boolean> {
     try {
-      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't find userId`)
       if (!msgId) msgId = this.message_id
       return new TelegramMethods(this.ctx).pinMessage(this.chat.id, msgId, disableNotification)
     } catch (e: any) {
@@ -54,7 +54,7 @@ export class Answer {
 
   async unpin(msgId?: number): Promise<boolean> {
     try {
-      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't find userId`)
       if (!msgId) msgId = this.message_id
       return new TelegramMethods(this.ctx).unpinMessage(this.chat.id, msgId)
     } catch (e: any) {
@@ -64,7 +64,7 @@ export class Answer {
 
   async sendChatAction(action: chatActions): Promise<boolean | void> {
     try {
-      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't find userId`)
       return new TelegramMethods(this.ctx).sendChatAction(this.chat.id, action)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
@@ -73,7 +73,7 @@ export class Answer {
 
   async sendDice(emoji?: diceEmojis, keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
     try {
-      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't find userId`)
       return new TelegramMethods(this.ctx).sendDice(this.chat.id, emoji, keyboard, options)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
@@ -83,7 +83,7 @@ export class Answer {
   async toast(text?: string): Promise<IMessage | void> {
     try {
       if (!this.update || !this.update.callback_query)
-        throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
+        throw new Error(`DegreetTelegram Error: can't find callback_query_id`)
       return new TelegramMethods(this.ctx).toast(this.update.callback_query.id, text)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
@@ -93,7 +93,7 @@ export class Answer {
   async alert(text?: string): Promise<IMessage | void> {
     try {
       if (!this.update || !this.update.callback_query)
-        throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
+        throw new Error(`DegreetTelegram Error: can't find callback_query_id`)
       return new TelegramMethods(this.ctx).alert(this.update?.callback_query?.id, text)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
@@ -103,7 +103,7 @@ export class Answer {
   async payment(ok: boolean, errorMessage?: string): Promise<IMessage | void> {
     try {
       if (!this.update || !this.update.pre_checkout_query)
-        throw new Error(`DegreetTelegram Error: can't found callback_query_id`)
+        throw new Error(`DegreetTelegram Error: can't find callback_query_id`)
       return new TelegramMethods(this.ctx).answerPayment(this.update.pre_checkout_query.id, ok, errorMessage)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
@@ -113,9 +113,25 @@ export class Answer {
   async edit(data?: sendTypes | Keyboard, keyboard?: Keyboard | Options | null, options?: any): Promise<IMessage | void> {
     try {
       if (!this.chat || !this.message_id)
-        throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
+        throw new Error(`DegreetTelegram Error: can't find userId & msgId`)
 
       return new TelegramMethods(this.ctx).edit(this.chat.id, this.message_id, data, keyboard, options)
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
+  async forward(toChatId?: number, options?: Options): Promise<IMessage | void> {
+    try {
+      if (!this.chat || !this.message_id)
+        throw new Error(`DegreetTelegram Error: can't find userId & msgId`)
+
+      return new TelegramMethods(this.ctx).forward(
+        this.chat.id,
+        toChatId, 
+        this.message_id,
+        options,
+      )
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
     }
@@ -127,7 +143,7 @@ export class Answer {
   async editKeyboard(keyboard?: Keyboard | null, options?: any): Promise<IMessage | void> {
     try {
       if (!this.chat || !this.message_id)
-        throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
+        throw new Error(`DegreetTelegram Error: can't find userId & msgId`)
 
       return new TelegramMethods(this.ctx).editKeyboard(this.chat.id, this.message_id, keyboard, options)
     } catch (e: any) {
@@ -138,7 +154,7 @@ export class Answer {
   async delete(): Promise<boolean> {
     try {
       if (!this.chat || !this.message_id)
-        throw new Error(`DegreetTelegram Error: can't found userId & msgId`)
+        throw new Error(`DegreetTelegram Error: can't find userId & msgId`)
 
       return new TelegramMethods(this.ctx).delete(this.chat.id, this.message_id)
     } catch (e: any) {
@@ -148,7 +164,7 @@ export class Answer {
 
   async getChatMember(chatId: number | string): Promise<IGetChatMemberResponse | void> {
     try {
-      if (!this.chat) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!this.chat) throw new Error(`DegreetTelegram Error: can't find userId`)
       return new TelegramMethods(this.ctx).getChatMember(chatId, this.chat.id)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)
@@ -167,7 +183,7 @@ export class Answer {
 
   async kickChatMember(): Promise<boolean> {
     try {
-      if (!this.chat || !this.from) throw new Error(`DegreetTelegram Error: can't found userId`)
+      if (!this.chat || !this.from) throw new Error(`DegreetTelegram Error: can't find userId`)
       return new TelegramMethods(this.ctx).kickChatMember(this.chat.id, this.from.id)
     } catch (e: any) {
       throw new Error(`TelegramError ${e.response.data.description}`)

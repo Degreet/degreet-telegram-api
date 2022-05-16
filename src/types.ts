@@ -314,6 +314,14 @@ export interface IPrivateChat {
   supports_inline_queries: boolean
 }
 
+export interface IForwardMessageExtra {
+  chat_id: number
+  message_id: number
+  from_chat_id: number
+  disable_notification?: boolean
+  protect_content?: boolean
+}
+
 export interface IChatPhoto {
   small_file_id: string
   small_file_unique_id: string

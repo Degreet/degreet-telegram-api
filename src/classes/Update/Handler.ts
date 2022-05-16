@@ -150,14 +150,7 @@ export class Handler<T> {
         }
       }
     } else {
-      if (entities && entities.length) {
-        handlers = availableHandlers.filter((handler: IHandler): boolean => (
-          handler.type === 'event' && handler.event === 'message' &&
-          !!handler.listenEntities?.find((entityType: string): boolean => (
-            !!entities.find((entity: IEntity): boolean => entity.type === entityType)
-          ))
-        ))
-      } else {
+      function defaultHandlers() {
         handlers = availableHandlers.filter((handler: IHandler): boolean => (
           handler.type === 'event' && handler.event === 'text' && handler.text === update.message?.text
         ))
@@ -168,6 +161,19 @@ export class Handler<T> {
             events.includes(handler.event) && !handler.text && !handler.listenEntities?.length
           ))
         }
+      }
+
+      if (entities && entities.length) {
+        handlers = availableHandlers.filter((handler: IHandler): boolean => (
+          handler.type === 'event' && handler.event === 'message' &&
+          !!handler.listenEntities?.find((entityType: string): boolean => (
+            !!entities.find((entity: IEntity): boolean => entity.type === entityType)
+          ))
+        ))
+
+        if (!handlers || !handlers.length) defaultHandlers()
+      } else {
+        defaultHandlers()
       }
     }
 

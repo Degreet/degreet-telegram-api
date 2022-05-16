@@ -4,7 +4,7 @@ import {
   IAnswerCallbackQueryExtra, IContext,
   IDeleteMessageTextExtra,
   IEditMarkupExtra,
-  IEditMessageTextExtra, IFile,
+  IEditMessageTextExtra, IFile, IForwardMessageExtra,
   IGetChatMemberExtra,
   IGetChatMemberResponse, IKickChatMemberExtra,
   IMessage,
@@ -97,6 +97,23 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<IMessage>('/sendInvoice', initExtra)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  public async forward(fromChatId?: number, toChatId?: number, msgId?: number, options?: Options): Promise<IMessage | void> {
+    try {
+      if (!fromChatId || !toChatId || !msgId) return
+
+      const initExtra: IForwardMessageExtra = {
+        chat_id: toChatId,
+        from_chat_id: fromChatId,
+        message_id: msgId,
+        ...this.getResultExtra(null, options)
+      }
+
+      return await TelegramMethods.fetch<IMessage>('/forwardMessage', initExtra)
     } catch (e: any) {
       throw e
     }
