@@ -50,7 +50,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
     updateToken(this.token)
   }
 
-  public get supportedUpdates() {
+  public static get supportedUpdates() {
     return [
       'chat_join_request', 'my_chat_member',
       'new_chat_member', 'left_chat_member',
