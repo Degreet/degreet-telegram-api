@@ -15,12 +15,13 @@ import {
   sendTypes,
 } from '../types'
 
-import FormData from 'form-data'
 import { Keyboard } from './Extra/Keyboard'
-import axios from 'axios'
 import { Options } from './Extra/Options'
 import { Payment } from './SendTypes/Payment'
 import { Media } from './SendTypes/Media'
+
+import FormData from 'form-data'
+import axios from 'axios'
 
 let connectionUri = ''
 export const updateConnectionUri = (uri: string): string => connectionUri = uri
@@ -114,6 +115,23 @@ export class TelegramMethods {
       }
 
       return await TelegramMethods.fetch<IMessage>('/forwardMessage', initExtra)
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  public async copy(fromChatId?: number, toChatId?: number, msgId?: number, options?: Options): Promise<IMessage | void> {
+    try {
+      if (!fromChatId || !toChatId || !msgId) return
+
+      const initExtra: IForwardMessageExtra = {
+        chat_id: toChatId,
+        from_chat_id: fromChatId,
+        message_id: msgId,
+        ...this.getResultExtra(null, options)
+      }
+
+      return await TelegramMethods.fetch<IMessage>('/copyMessage', initExtra)
     } catch (e: any) {
       throw e
     }

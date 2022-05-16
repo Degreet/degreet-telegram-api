@@ -137,6 +137,22 @@ export class Answer {
     }
   }
 
+  async copy(toChatId?: number, options?: Options): Promise<IMessage | void> {
+    try {
+      if (!this.chat || !this.message_id)
+        throw new Error(`DegreetTelegram Error: can't find userId & msgId`)
+
+      return new TelegramMethods(this.ctx).copy(
+        this.chat.id,
+        toChatId,
+        this.message_id,
+        options,
+      )
+    } catch (e: any) {
+      throw new Error(`TelegramError ${e.response.data.description}`)
+    }
+  }
+
   /**
    * @deprecated Use .edit instead
    */
@@ -190,15 +206,27 @@ export class Answer {
     }
   }
 
-  async downloadPhoto(path: string): Promise<boolean> {
+  async downloadMedia(path: string): Promise<boolean> {
     try {
-      const photoParts: IPhotoSize[] | undefined = this.update?.message?.photo
-      if (!photoParts) return false
+      let fileId: string
 
-      const photo: IPhotoSize | undefined = photoParts[photoParts.length - 1]
-      if (!photo) return false
+      if (this.update?.message?.photo) {
+        const photoParts: IPhotoSize[] | undefined = this.update?.message?.photo
+        if (!photoParts) return false
 
-      const fileInfo: IFile | void = await new TelegramMethods(this.ctx).getFile(photo.file_id)
+        const photo: IPhotoSize | undefined = photoParts[photoParts.length - 1]
+        if (!photo) return false
+
+        fileId = photo.file_id
+      } else if (this.update?.message?.document) {
+        fileId = this.update?.message?.document.file_id
+      } else if (this.update?.message?.video) {
+        fileId = this.update?.message?.video.file_id
+      } else if (this.update?.message?.video_note) {
+        fileId = this.update?.message?.video_note.file_id
+      } else return false
+
+      const fileInfo: IFile | void = await new TelegramMethods(this.ctx).getFile(fileId)
       if (!fileInfo) return false
 
       const connectionUri: string = TelegramMethods.token

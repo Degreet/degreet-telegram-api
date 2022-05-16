@@ -64,6 +64,8 @@ export class Handler<T> {
         events.push('forward')
       } else if (update.message.video) {
         events.push('video')
+      } else if (update.message.video_note) {
+        events.push('video_note')
       } else if (update.message.document) {
         events.push('document')
       }

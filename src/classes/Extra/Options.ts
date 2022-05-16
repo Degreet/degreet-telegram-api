@@ -18,6 +18,11 @@ export class Options {
     return this
   }
 
+  public replyTo(msgId?: number): this {
+    if (msgId) this.extra.reply_to_message_id = msgId
+    return this
+  }
+
   public setParseMode(parseMode: parseModeTypes): this {
     this.extra.parse_mode = parseMode
     return this
