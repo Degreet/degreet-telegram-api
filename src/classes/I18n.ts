@@ -27,6 +27,12 @@ export class I18n {
     })
   }
 
+  public static listen(key: string): middleware {
+    return (ctx: IContext<I18nSession>, next: nextMiddleware): void => {
+      if (ctx.msg.text?.trim() === ctx.i18n?.get(key)) next()
+    }
+  }
+
   middleware(): middleware {
     return (ctx: IContext<I18nSession>, next: nextMiddleware): void => {
       if (!ctx.session.i18n) ctx.session.i18n = { locale: this.defaultLocale }
