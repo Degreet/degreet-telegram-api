@@ -1,5 +1,5 @@
 import { Keyboard } from '../src/classes/Extra/Keyboard'
-import { DegreetTelegram, Session, I18n } from '../index'
+import { DegreetTelegram, Session, I18n, Layout } from '../index'
 import { ICustomContext, ISession } from './types'
 import config from 'config'
 
@@ -26,8 +26,8 @@ bot.use(menuLayout)
 bot.use(shopBlock)
 bot.use(diceBlock)
 
-bot.onClick('menu', (ctx: ICustomContext): any => ctx.callLayout('menu'))
-bot.command('start', (ctx: ICustomContext): any => ctx.callLayout('menu'))
+bot.onClick('menu', Layout.layoutCaller('menu'))
+bot.command('start', Layout.layoutCaller('menu'))
 
 bot.start().then((username: string): void => {
   console.log(`Bot started on @${username}`)

@@ -1,4 +1,4 @@
-import { middleware } from '../../types'
+import { IContext, middleware } from '../../types'
 
 export class Layout {
   name: string
@@ -7,5 +7,9 @@ export class Layout {
   constructor(name: string, handler: middleware) {
     this.name = name
     this.handler = handler
+  }
+
+  public static layoutCaller(name: string): middleware {
+    return (ctx: IContext): any => ctx.callLayout(name)
   }
 }
