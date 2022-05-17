@@ -7,6 +7,7 @@ import { Answer } from './classes/Context/Answer'
 import { Media } from './classes/SendTypes/Media'
 
 export type middleware = (ctx: IContext, next: nextMiddleware) => any | Promise<any>
+export type middlewareArgs = (ctx: IContext, ...args: any[]) => any | Promise<any>
 export type nextMiddleware = () => any
 export type sessionItem<T> = [number, T]
 export type sceneInfoItem = [number, IScene]
@@ -139,7 +140,7 @@ export interface IContext<T = any> {
   api: TelegramMethods
   params: string[]
   scene: ISceneContext
-  callLayout: (name: string) => boolean
+  callLayout: (name: string, ...args: any[]) => boolean
   matchParams: RegExpMatchArray
   callbackQuery?: ICallbackQuery
   joinRequest?: IChatJoinRequest
