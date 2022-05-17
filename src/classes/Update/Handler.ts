@@ -148,6 +148,8 @@ export class Handler<T> {
           const middleware = scene.handlers[0].middlewares[activeIndex]
           if (!middleware) return
 
+          this.sceneController.setData(userId, [...(ctx.scene.data || []), ctx.msg.text || ''])
+
           handlers = [{
             type: 'scene',
             middlewares: [...scene.middlewares, middleware]

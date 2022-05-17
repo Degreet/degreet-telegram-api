@@ -29,7 +29,7 @@ export class SceneController {
     let sceneInfo = data.find((info: sceneInfoItem) => info[0] === userId)
 
     if (!sceneInfo) {
-      sceneInfo = [userId, { activeScene: sceneName, middlewareIndex: 0 }]
+      sceneInfo = [userId, { activeScene: sceneName, middlewareIndex: 0, data: [] }]
       data.push(sceneInfo)
     } else {
       sceneInfo[1].activeScene = sceneName
@@ -71,16 +71,28 @@ export class SceneController {
 
   public next(userId?: number): void {
     if (!userId) return
-    const sceneInfo = data.find((info: sceneInfoItem) => info[0] === userId)
+    const sceneInfo = data.find((info: sceneInfoItem): boolean => info[0] === userId)
     if (sceneInfo) sceneInfo[1].middlewareIndex++
+  }
+
+  public getData(userId?: number): string[] | void {
+    if (!userId) return
+    const sceneInfo = data.find((info: sceneInfoItem): boolean => info[0] === userId)
+    if (sceneInfo) return sceneInfo[1].data
+  }
+
+  public setData(userId?: number, newData?: string[] | void): void {
+    if (!userId || !newData) return
+    const sceneInfo = data.find((info: sceneInfoItem): boolean => info[0] === userId)
+    if (sceneInfo) sceneInfo[1].data = [...newData]
   }
 
   public leave(userId?: number): void {
     if (!userId) return
-    let sceneInfo = data.find((info: sceneInfoItem) => info[0] === userId)
+    let sceneInfo = data.find((info: sceneInfoItem): boolean => info[0] === userId)
 
     if (!sceneInfo) {
-      sceneInfo = [userId, { activeScene: null, middlewareIndex: 0 }]
+      sceneInfo = [userId, { activeScene: null, middlewareIndex: 0, data: [] }]
       data.push(sceneInfo)
     } else {
       sceneInfo[1].activeScene = null

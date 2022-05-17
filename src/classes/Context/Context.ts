@@ -160,7 +160,13 @@ export class Context<T> implements IContext {
     const enter = (name: string): void => sceneController.enter(this.sender?.id, this, name)
     const leave = (): void => sceneController.leave(this.sender?.id)
     const next = (): void => sceneController.next(this.sender?.id)
+    const getData = (): string[] | void => sceneController.getData(this.sender?.id)
 
-    return { enter, leave, next }
+    return {
+      enter, leave, next,
+      get data() {
+        return getData()
+      },
+    }
   }
 }

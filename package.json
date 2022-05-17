@@ -1,6 +1,6 @@
 {
   "name": "degreet-telegram",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "main": "build/index.js",
   "types": "index.ts",
   "description": "The library for using Telegram Bot API for development on TypeScript",

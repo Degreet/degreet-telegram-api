@@ -183,11 +183,13 @@ export interface ISceneContext {
   enter: (name: string) => void
   leave: () => void
   next: () => void
+  data: string[] | void
 }
 
 export interface IScene {
   activeScene: string | null
   middlewareIndex: number
+  data: string[]
 }
 
 export interface IInlineKeyboard {
