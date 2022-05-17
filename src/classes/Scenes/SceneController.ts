@@ -97,6 +97,7 @@ export class SceneController {
     } else {
       sceneInfo[1].activeScene = null
       sceneInfo[1].middlewareIndex = 0
+      sceneInfo[1].data = []
     }
   }
 }
