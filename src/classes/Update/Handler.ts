@@ -148,7 +148,10 @@ export class Handler<T> {
           const middleware = scene.handlers[0].middlewares[activeIndex]
           if (!middleware) return
 
-          middleware(ctx, () => {})
+          handlers = [{
+            type: 'scene',
+            middlewares: [middleware]
+          }]
         }
       }
     } else {
