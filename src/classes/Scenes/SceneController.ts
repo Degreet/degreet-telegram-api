@@ -36,7 +36,7 @@ export class SceneController {
     }
 
     const scene: scene | void = this.scenes.find((scene: scene): boolean => scene.name === sceneName)
-    if (!scene) return
+    if (!scene) throw new Error(`DegreetTelegram: Scene ${sceneName} not found`)
 
     if (scene instanceof BlockScene) {
       const handler: IHandler | undefined = scene.handlers.find((handler: IHandler): boolean => (

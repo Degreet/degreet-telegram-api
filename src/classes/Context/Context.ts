@@ -149,10 +149,11 @@ export class Context<T> implements IContext {
     this.layouts = layouts
   }
 
-  public callLayout(name: string): boolean {
+  public callLayout(name: string): true {
     const layout = this.layouts.find((layout: Layout): boolean => layout.name === name)
-    if (layout) layout.handler(this, () => {})
-    return !!layout
+    if (!layout) throw new Error(`DegreetTelegram: Layout ${name} not found`)
+    layout.handler(this, () => {})
+    return true
   }
 
   private getSceneParams(sceneController: SceneController): ISceneContext {
