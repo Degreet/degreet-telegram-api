@@ -1,4 +1,4 @@
-import { eventType, IHandler, middleware } from '../../types'
+import { eventType, IHandler, middleware, onClickActions } from '../../types'
 
 export class BlockBuilder {
   handlers: IHandler[] = []
@@ -24,8 +24,8 @@ export class BlockBuilder {
     else saveHandler(events)
   }
 
-  public onClick(actions: string[] | string, ...handlers: middleware[]): void {
-    const saveHandler = (action: string): void => {
+  public onClick(actions: onClickActions[] | onClickActions, ...handlers: middleware[]): void {
+    const saveHandler = (action: onClickActions): void => {
       this.handlers.push({
         event: action,
         type: 'button_click',
