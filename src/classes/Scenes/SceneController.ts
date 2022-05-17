@@ -64,7 +64,7 @@ export class SceneController {
       if (!handler || !handler.middlewares) return
     }
 
-    if (scene.middlewares)
+    if (scene.middlewares && scene.middlewares.length)
       scene.middlewares[0](ctx, getNextHandler(scene.middlewares, 1, handler.middlewares[0]))
     else passMiddleware(handler.middlewares[0])
   }
