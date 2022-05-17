@@ -150,7 +150,7 @@ export class Handler<T> {
 
           handlers = [{
             type: 'scene',
-            middlewares: [middleware]
+            middlewares: [...scene.middlewares, middleware]
           }]
         }
       }

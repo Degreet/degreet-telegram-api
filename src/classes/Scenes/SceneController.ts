@@ -1,4 +1,4 @@
-import { IHandler, scene, sceneInfoItem } from '../../types'
+import { IHandler, middleware, nextMiddleware, scene, sceneInfoItem } from '../../types'
 import { BlockScene } from './BlockScene'
 
 const data: sceneInfoItem[] = []
@@ -33,23 +33,40 @@ export class SceneController {
       data.push(sceneInfo)
     } else {
       sceneInfo[1].activeScene = sceneName
+      sceneInfo[1].middlewareIndex = 0
     }
 
     const scene: scene | void = this.scenes.find((scene: scene): boolean => scene.name === sceneName)
     if (!scene) throw new Error(`DegreetTelegram: Scene ${sceneName} not found`)
 
+    function passMiddleware(middleware: middleware): void {
+      middleware(ctx, () => {})
+    }
+
+    function getNextHandler(middlewares: middleware[], i: number, resultHandler: middleware): nextMiddleware {
+      return (): void => {
+        const middleware: middleware | void = middlewares[i]
+        if (!middleware) return passMiddleware(resultHandler)
+        middleware(ctx, getNextHandler(middlewares, i + 1, resultHandler))
+      }
+    }
+
+    let handler: IHandler | undefined
+
     if (scene instanceof BlockScene) {
-      const handler: IHandler | undefined = scene.handlers.find((handler: IHandler): boolean => (
+      handler = scene.handlers.find((handler: IHandler): boolean => (
         handler.type === 'event' && handler.event === 'sceneEnter'
       ))
 
       if (!handler || !handler.middlewares) return
-      handler.middlewares[0](ctx, () => {})
     } else {
-      const handler: IHandler | undefined = scene.handlers[0]
+      handler = scene.handlers[0]
       if (!handler || !handler.middlewares) return
-      handler.middlewares[0](ctx, () => {})
     }
+
+    if (scene.middlewares)
+      scene.middlewares[0](ctx, getNextHandler(scene.middlewares, 1, handler.middlewares[0]))
+    else passMiddleware(handler.middlewares[0])
   }
 
   public next(userId?: number): void {
@@ -67,6 +84,7 @@ export class SceneController {
       data.push(sceneInfo)
     } else {
       sceneInfo[1].activeScene = null
+      sceneInfo[1].middlewareIndex = 0
     }
   }
 }
