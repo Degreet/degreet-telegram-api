@@ -1,4 +1,4 @@
-import { IHandler, middleware, nextMiddleware, scene, sceneInfoItem } from '../../types'
+import { IContext, IHandler, middleware, nextMiddleware, scene, sceneInfoItem } from '../../types'
 import { BlockScene } from './BlockScene'
 
 const data: sceneInfoItem[] = []
@@ -24,14 +24,14 @@ export class SceneController {
     return sceneInfo[1].middlewareIndex
   }
 
-  /**
-   * @deprecated Use .onEnter instead
-   */
-  public enter(userId?: number, ctx?: any, sceneName?: string): void {
-    return this.onEnter(userId, ctx, sceneName)
+  public onLeave(sceneName: string, handler: middleware): void {
+    if (!sceneName) return
+    const scene: scene | void = this.scenes.find((scene: scene): boolean => scene.name === sceneName)
+    if (!scene) throw new Error(`DegreetTelegram: Scene ${sceneName} not found`)
+    scene.onLeaveHandler = handler
   }
 
-  public onEnter(userId?: number, ctx?: any, sceneName?: string): void {
+  public enter(userId?: number, ctx?: any, sceneName?: string): void {
     if (!userId || !ctx || !sceneName) return
     let sceneInfo = data.find((info: sceneInfoItem) => info[0] === userId)
 
@@ -94,8 +94,8 @@ export class SceneController {
     if (sceneInfo) sceneInfo[1].data = [...newData]
   }
 
-  public leave(userId?: number): void {
-    if (!userId) return
+  public leave(userId?: number, ctx?: IContext): void {
+    if (!userId || !ctx) return
     let sceneInfo = data.find((info: sceneInfoItem): boolean => info[0] === userId)
 
     if (!sceneInfo) {
@@ -106,5 +106,10 @@ export class SceneController {
       sceneInfo[1].middlewareIndex = 0
       sceneInfo[1].data = []
     }
+
+    const scene: scene | undefined = this.scenes.find((scene: scene): boolean => scene.name === scene.name)
+    if (!scene || !scene.onLeave) return
+
+    scene.onLeaveHandler(ctx, () => {})
   }
 }
