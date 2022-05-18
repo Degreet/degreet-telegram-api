@@ -9,7 +9,7 @@ import {
   IGetChatMemberResponse, IKickChatMemberExtra,
   IMessage,
   IMessageExtra, IPaymentExtra,
-  IPinMessageExtra, IPreCheckoutQueryExtra,
+  IPinMessageExtra, IPreCheckoutQueryExtra, IPrivateChat,
   ISendActionExtra,
   ISendDiceExtra,
   sendTypes,
@@ -54,6 +54,10 @@ export class TelegramMethods {
       ...(keyboard ? keyboard.solveExtra(this.ctx) : {}),
       ...(options ? options.extra : {}),
     }
+  }
+
+  public async getMe(): Promise<IPrivateChat> {
+    return await TelegramMethods.fetch<IPrivateChat>('/getMe', null)
   }
 
   public async send(userId?: number, data?: sendTypes, keyboard?: Keyboard | null, options?: Options | null): Promise<IMessage | void> {

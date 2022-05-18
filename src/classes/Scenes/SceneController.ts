@@ -24,7 +24,14 @@ export class SceneController {
     return sceneInfo[1].middlewareIndex
   }
 
+  /**
+   * @deprecated Use .onEnter instead
+   */
   public enter(userId?: number, ctx?: any, sceneName?: string): void {
+    return this.onEnter(userId, ctx, sceneName)
+  }
+
+  public onEnter(userId?: number, ctx?: any, sceneName?: string): void {
     if (!userId || !ctx || !sceneName) return
     let sceneInfo = data.find((info: sceneInfoItem) => info[0] === userId)
 
