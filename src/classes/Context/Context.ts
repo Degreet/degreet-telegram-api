@@ -157,15 +157,20 @@ export class Context<T> implements IContext {
   }
 
   private getSceneParams(sceneController: SceneController): ISceneContext {
-    const enter = (name: string): void => sceneController.enter(this.sender?.id, this, name)
+    const enter = (name: string, params?: any): void => sceneController.enter(this.sender?.id, this, name, params)
     const leave = (): void => sceneController.leave(this.sender?.id, this)
     const next = (): void => sceneController.next(this.sender?.id)
+
     const getData = (): string[] | void => sceneController.getData(this.sender?.id)
+    const getParams = (): string[] | void => sceneController.getParams(this.sender?.id)
 
     return {
       enter, leave, next,
-      get data() {
+      get data(): string[] | void {
         return getData()
+      },
+      get params(): any | void {
+        return getParams()
       },
     }
   }

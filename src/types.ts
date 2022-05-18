@@ -182,16 +182,18 @@ export interface IMediaInfo {
 }
 
 export interface ISceneContext {
-  enter: (name: string) => void
+  enter: (name: string, params?: any) => void
   leave: () => void
   next: () => void
   data: string[] | void
+  params: any
 }
 
 export interface IScene {
   activeScene: string | null
   middlewareIndex: number
   data: string[]
+  params?: any
 }
 
 export interface IInlineKeyboard {

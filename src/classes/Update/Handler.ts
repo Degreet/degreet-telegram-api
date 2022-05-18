@@ -2,6 +2,7 @@ import { eventHint, IContext, IEntity, IHandler, IUpdate, middleware, nextMiddle
 import { Context } from '../Context/Context'
 import { SceneController } from '../Scenes/SceneController'
 import { Layout } from '../Block/Layout'
+import { StepScene } from '../Scenes/StepScene'
 
 export class Handler<T> {
   sceneController: SceneController
@@ -31,6 +32,19 @@ export class Handler<T> {
       }
     } else {
       return this.handlers
+    }
+  }
+
+  private static matchButtonClickEvent(handler: IHandler, update: IUpdate, ctx: IContext): boolean {
+    if (handler.type === 'button_click' && handler.event instanceof RegExp) {
+      const match: RegExpMatchArray | null | undefined =
+        update.callback_query?.data.match(handler.event)
+      if (!match) return false
+
+      ctx.matchParams = match
+      return true
+    } else {
+      return handler.type === 'button_click' && update.callback_query?.data === handler.event
     }
   }
 
@@ -121,18 +135,9 @@ export class Handler<T> {
         ]
       })
     } else if (update.callback_query) {
-      handlers = availableHandlers.filter((handler: IHandler): boolean => {
-        if (handler.type === 'button_click' && handler.event instanceof RegExp) {
-          const match: RegExpMatchArray | null | undefined =
-            update.callback_query?.data.match(handler.event)
-          if (!match) return false
-
-          ctx.matchParams = match
-          return true
-        } else {
-          return handler.type === 'button_click' && update.callback_query?.data === handler.event
-        }
-      })
+      handlers = availableHandlers.filter((handler: IHandler): boolean => (
+        Handler.matchButtonClickEvent(handler, update, ctx)
+      ))
     } else if (events.includes('message') && this.sceneController.getActiveScene(userId)) {
       const activeScene: string | null = this.sceneController.getActiveScene(userId)
 
@@ -143,11 +148,22 @@ export class Handler<T> {
 
         if (scene && scene.handlers.length) {
           const activeIndex: number | null = this.sceneController.getActiveIndex(userId)
-          if (!activeIndex) return
+          if (typeof activeIndex !== 'number') return
 
-          const middleware = scene.handlers[0].middlewares[activeIndex]
-          if (!middleware) return
+          let middleware: middleware | undefined
 
+          if (scene instanceof StepScene) {
+            middleware = scene.handlers[0].middlewares[activeIndex]
+          } else {
+            const handler: IHandler | undefined = scene.handlers.find((handler: IHandler): boolean => (
+              Handler.matchButtonClickEvent(handler, update, ctx) ||
+              (!(handler.event instanceof RegExp) && events.includes(handler.event))
+            ))
+
+            if (handler) middleware = handler.middlewares[activeIndex]
+          }
+
+          if (!middleware) return undefined
           this.sceneController.setData(userId, [...(ctx.scene.data || []), ctx.msg.text || ''])
 
           handlers = [{
