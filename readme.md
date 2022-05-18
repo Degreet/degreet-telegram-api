@@ -20,4 +20,5 @@ bot.start().then((username: string): void => {
 })
 ```
 
+Full example is here: https://github.com/Degreet/link-cloud-bot <br/>
 Full documentation is here: https://degreetpro.gitbook.io/degreet-telegram

@@ -110,7 +110,7 @@ export class SceneController {
     }
 
     const scene: scene | undefined = this.scenes.find((scene: scene): boolean => scene.name === scene.name)
-    if (!scene || !scene.onLeave) return
+    if (!scene || !scene.onLeaveHandler) return
 
     scene.onLeaveHandler(ctx, () => {})
   }
