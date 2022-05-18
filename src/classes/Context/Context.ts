@@ -16,7 +16,7 @@ import {
   ISuccessfulPayment,
   IInlineQuery,
   IChosenInlineQuery,
-  IShippingQuery, IVideo, IVideoNote, IDocument
+  IShippingQuery, IVideo, IVideoNote, IDocument, IParsed, IEntity
 } from '../../types'
 
 import { TelegramMethods } from '../TelegramMethods'
@@ -42,6 +42,7 @@ export class Context<T> implements IContext {
 
   params: string[] = []
   matchParams: RegExpMatchArray
+  parsed: IParsed = { links: [], emails: [], phones: [] }
 
   callbackQuery?: ICallbackQuery
   joinRequest?: IChatJoinRequest
@@ -71,14 +72,35 @@ export class Context<T> implements IContext {
       this.sender = update.message?.from
       this.chat = update.message?.chat
 
-      if (
-        update.message.entities && update.message.text &&
-        update.message.entities[0].type === 'bot_command' &&
-        update.message.text.length !== update.message.entities[0].length
-      ) {
-        this.params = update.message.text
-          .slice(update.message.entities[0].length + 1)
-          .split(' ')
+      if (update.message.entities && update.message.text) {
+        update.message.entities.forEach((entity: IEntity): void | null => {
+          if (!['url', 'phone_number', 'email'].includes(entity.type) || !update.message) return null
+          const text: string = update.message.text.slice(entity.offset, entity.length)
+
+          switch (entity.type) {
+            case 'url':
+              if (!this.parsed.link) this.parsed.link = text
+              this.parsed.links.push(text)
+              break
+            case 'phone_number':
+              if (!this.parsed.phone) this.parsed.phone = text
+              this.parsed.phones.push(text)
+              break
+            case 'email':
+              if (!this.parsed.email) this.parsed.email = text
+              this.parsed.emails.push(text)
+              break
+          }
+        })
+
+        if (
+          update.message.entities[0].type === 'bot_command' &&
+          update.message.text.length !== update.message.entities[0].length
+        ) {
+          this.params = update.message.text
+            .slice(update.message.entities[0].length + 1)
+            .split(' ')
+        }
       }
 
       if (update.message.new_chat_member) {

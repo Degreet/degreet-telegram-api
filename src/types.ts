@@ -129,6 +129,15 @@ export interface IEditMessageMediaExtra {
   supports_streaming?: boolean
 }
 
+export interface IParsed {
+  link?: string
+  links: string[]
+  email?: string
+  emails: string[]
+  phone?: string
+  phones: string[]
+}
+
 export interface IContext<T = any> {
   sender?: IPrivateChat
   message?: IMessage
@@ -161,6 +170,7 @@ export interface IContext<T = any> {
   videoNote?: IVideoNote
   document?: IDocument
   post?: IMessage
+  parsed: IParsed
 }
 
 export interface I18nSession {
