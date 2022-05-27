@@ -1,22 +1,13 @@
 import { eventHint, IPrivateChat, IContext, IHandler, middleware, scene, IOptions } from './src/types'
 import { TELEGRAM_BOT_API } from './src/constants'
+import axios from 'axios'
 
-import { updateConnectionUri, updateToken } from './src/classes/TelegramMethods'
-import { Keyboard } from './src/classes/Extra/Keyboard'
-import { Context } from './src/classes/Context/Context'
-import { Options } from './src/classes/Extra/Options'
-import { Session } from './src/classes/Session'
-import { Layout } from './src/classes/Block/Layout'
-import { I18n } from './src/classes/I18n'
+import { TelegramMethods, updateConnectionUri, updateToken } from './src/classes/TelegramMethods'
+import { Layout, StepScene, Block, BlockScene } from './src/classes'
 
 import { BlockBuilder } from './src/classes/Block/BlockBuilder'
-import { Block } from './src/classes/Block/Block'
-
-import { StepScene } from './src/classes/Scenes/StepScene'
-import { BlockScene } from './src/classes/Scenes/BlockScene'
 import { SceneController } from './src/classes/Scenes/SceneController'
 
-import axios from 'axios'
 import { Polling } from './src/classes/Update/Polling'
 import { Handler } from './src/classes/Update/Handler'
 import { WebhookRunner } from './src/classes/Update/WebhookRunner'
@@ -27,6 +18,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   info: IPrivateChat
   scenes: scene[] = []
   layouts: Layout[] = []
+  api: TelegramMethods = new TelegramMethods(null, this.layouts)
 
   limit?: number
   timeout?: number
@@ -108,15 +100,5 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   }
 }
 
-export {
-  DegreetTelegram,
-  Context,
-  Session,
-  Block,
-  BlockScene,
-  StepScene,
-  Layout,
-  Keyboard,
-  I18n,
-  Options,
-}
+export const Bot = DegreetTelegram
+export { DegreetTelegram }

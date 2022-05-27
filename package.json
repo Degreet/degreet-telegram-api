@@ -3,6 +3,9 @@
   "version": "2.7.6",
   "main": "build/index.js",
   "types": "index.ts",
+  "export": {
+    ".": ["index.ts", "build/index.js", "src/types.ts", "src/classes"]
+  },
   "description": "The library for using Telegram Bot API for development on TypeScript",
   "author": "Degreet <degreetpro@gmail.com>",
   "license": "MIT",
