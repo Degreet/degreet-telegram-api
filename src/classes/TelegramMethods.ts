@@ -22,7 +22,6 @@ import { Media } from './SendTypes/Media'
 
 import FormData from 'form-data'
 import axios from 'axios'
-import { Layout } from './Block/Layout'
 
 let connectionUri = ''
 export const updateConnectionUri = (uri: string): string => connectionUri = uri
@@ -32,11 +31,9 @@ export const updateToken = (newToken: string): string => token = newToken
 
 export class TelegramMethods {
   ctx?: IContext
-  layouts: Layout[]
 
-  constructor(ctx?: IContext | null, layouts?: Layout[]) {
-    if (ctx) this.ctx = ctx
-    if (layouts) this.layouts = layouts
+  constructor(ctx?: IContext) {
+    this.ctx = ctx
   }
   
   public static get token(): string {

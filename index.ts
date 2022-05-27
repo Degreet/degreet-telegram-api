@@ -18,7 +18,7 @@ class DegreetTelegram<T extends IContext = IContext> extends BlockBuilder {
   info: IPrivateChat
   scenes: scene[] = []
   layouts: Layout[] = []
-  api: TelegramMethods = new TelegramMethods(null, this.layouts)
+  api: TelegramMethods = new TelegramMethods()
 
   limit?: number
   timeout?: number
